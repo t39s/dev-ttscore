@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#0b1020" />
   <meta name="ttscore-build" content="compact-live-scoreboard-2" />
-  <title>ttScore 0.8.2</title>
+  <title>ttScore 0.6.1</title>
   <style>
     :root {
       --bg: #0b1020;
@@ -493,132 +493,6 @@
       color: #fff;
       border: 1px solid rgba(255,255,255,.10);
       box-shadow: inset 0 1px 0 rgba(255,255,255,.15), 0 10px 24px rgba(221,79,87,.22);
-    }
-
-    .speech-profile-stack {
-      display: grid;
-      gap: 14px;
-    }
-    .speech-profile-card {
-      display: grid;
-      gap: 10px;
-      padding: 14px;
-      border: 1px solid rgba(255,255,255,.12);
-      border-radius: 20px;
-      background: linear-gradient(180deg, rgba(34,42,62,.58), rgba(17,23,38,.58));
-    }
-    .speech-profile-heading {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: baseline;
-    }
-    .speech-profile-heading strong {
-      color: var(--text);
-      font-size: 17px;
-    }
-    .speech-profile-heading span {
-      color: var(--muted);
-      font-size: 13px;
-    }
-    .speech-profile-field {
-      display: grid;
-      gap: 6px;
-    }
-    .speech-profile-field label {
-      color: var(--muted);
-      font-size: 13px;
-      font-weight: 800;
-    }
-    .speech-profile-field select {
-      width: 100%;
-      min-height: 46px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.16);
-      background: #171e31;
-      color: var(--text);
-      padding: 8px 12px;
-      font: inherit;
-    }
-    .speech-volume-row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 10px;
-      align-items: center;
-    }
-    .speech-volume-row input[type="range"] {
-      --speech-volume-pct: 100%;
-      --speech-volume-thumb: 24px;
-      -webkit-appearance: none;
-      appearance: none;
-      width: 100%;
-      height: 28px;
-      margin: 0;
-      padding: 0;
-      background:
-        linear-gradient(90deg, var(--accent) 0 var(--speech-volume-pct), rgba(255,255,255,.34) var(--speech-volume-pct) 100%)
-        center / calc(100% - var(--speech-volume-thumb)) 4px no-repeat;
-      border: 0;
-      border-radius: 999px;
-    }
-    .speech-volume-row input[type="range"]::-webkit-slider-runnable-track {
-      height: 4px;
-      background: transparent;
-      border: 0;
-    }
-    .speech-volume-row input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: var(--speech-volume-thumb);
-      height: var(--speech-volume-thumb);
-      margin-top: -10px;
-      border: 1px solid rgba(0,0,0,.18);
-      border-radius: 50%;
-      background: #fff;
-      box-shadow: 0 1px 4px rgba(0,0,0,.28);
-    }
-    .speech-volume-row input[type="range"]::-moz-range-track {
-      height: 4px;
-      border: 0;
-      border-radius: 999px;
-      background: rgba(255,255,255,.34);
-    }
-    .speech-volume-row input[type="range"]::-moz-range-progress {
-      height: 4px;
-      border-radius: 999px;
-      background: var(--accent);
-    }
-    .speech-volume-row input[type="range"]::-moz-range-thumb {
-      width: var(--speech-volume-thumb);
-      height: var(--speech-volume-thumb);
-      border: 1px solid rgba(0,0,0,.18);
-      border-radius: 50%;
-      background: #fff;
-      box-shadow: 0 1px 4px rgba(0,0,0,.28);
-    }
-    .speech-volume-value {
-      min-width: 48px;
-      text-align: right;
-      color: var(--text);
-      font-weight: 800;
-      font-variant-numeric: tabular-nums;
-    }
-    .speech-profile-preview {
-      min-height: 44px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(255,255,255,.06);
-      color: var(--text);
-      font-weight: 800;
-    }
-    .speech-profile-status {
-      min-height: 1.4em;
-      color: var(--muted);
-      font-size: 12px;
-      line-height: 1.35;
-    }
-    .speech-profile-status.warning {
-      color: #ffdf93;
     }
 
     .summary-list {
@@ -2135,7 +2009,7 @@
         <button class="primary" id="startButton" type="button">Начать встречу из 5 партий</button>
         <button class="secondary" id="openJsonButton" type="button">Посмотреть сохранённый отчёт</button>
         <p class="tiny">По умолчанию данные остаются в браузере. Live-публикация включается отдельно из меню встречи.</p>
-        <p class="app-version">Версия 0.8.2</p>
+        <p class="app-version">Версия 0.6.1</p>
       </div>
     </section>
 
@@ -2315,7 +2189,7 @@
       <footer class="stat-report-footer" id="statReportFooter">
         <p id="statDataEnteredLine" hidden>Данные введены: <time id="statDataEnteredAt"></time></p>
         <p id="statAppLinkLine" hidden><a href="https://t39s.github.io/ttscore/" target="_blank" rel="noopener noreferrer">https://t39s.github.io/ttscore/</a></p>
-        <p class="app-version">Версия 0.8.2</p>
+        <p class="app-version">Версия 0.6.1</p>
       </footer>
     </section>
 
@@ -2346,7 +2220,7 @@
         <div class="live-scoreboard-server-indicator live-scoreboard-server-right" id="liveScoreboardRightPlayer" aria-label="Подающий справа"></div>
       </div>
       <p class="visually-hidden" id="liveScoreboardServer" hidden></p>
-      <p class="live-scoreboard-footer">Версия 0.8.2</p>
+      <p class="live-scoreboard-footer">Версия 0.6.1</p>
     </section>
   </main>
 
@@ -2375,8 +2249,6 @@
     const LIVE_STATE_SCHEMA_VERSION = 1;
     const LIVE_STATE_MAX_JSON_BYTES = 16 * 1024;
     const LIVE_SCOREBOARD_PERSPECTIVE_STORAGE_KEY = "ttScore:liveScoreboardPerspective:v1";
-    const SPEECH_PROFILE_STORAGE_KEY = "ttScore:speechProfiles:v2";
-    const SPEECH_MODE_STORAGE_KEY = "ttScore:speechMode:v1";
     const FIREBASE_SDK_VERSION = "12.17.1";
     const LIVE_FIREBASE_CONFIG = Object.freeze({
       apiKey: "AIzaSyAl_-dvsuM7g4hvuUZtt3mNcMc7a0Kztnw",
@@ -2569,9 +2441,7 @@
     let pendingRestoreState = PAGE_CAPABILITIES.writesLocalMeeting && storedMeeting?.needsConfirmation ? storedMeeting.state : null;
     let state = storedMeeting && (IS_REPORT_PAGE || !storedMeeting.needsConfirmation) ? storedMeeting.state : defaultState();
     if (IS_TEAM_MODE) state.speechEnabled = false;
-    let speechMode = loadSpeechMode();
-    let speechProfiles = loadSpeechProfiles();
-    let speechProfileDraft = null;
+    let speechMode = "ru";
     let importedCanonicalSource = importedSessionResult?.source || null;
     let importLoadError = importedSessionResult?.error || "";
     let protectedReportLoading = IS_PROTECTED_REPORT;
@@ -3389,7 +3259,7 @@
       const pageUrl = new URL(location.href);
       pageUrl.hash = "";
       return [
-        "ttScore 0.8.2 — first-server-normalization 1",
+        "ttScore 0.6.1 — first-server-normalization 1",
         `Роль: ${role}`,
         `Ошибка: ${message || "Неизвестная ошибка"}`,
         `Время: ${new Date().toISOString()}`,
@@ -4192,28 +4062,6 @@
       return "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
     }
 
-    function normalizeSpeechMode(mode) {
-      return ["ru", "ru+eng", "eng+ru", "eng"].includes(mode) ? mode : "ru";
-    }
-
-    function loadSpeechMode() {
-      try {
-        return normalizeSpeechMode(localStorage.getItem(SPEECH_MODE_STORAGE_KEY));
-      } catch (_) {
-        return "ru";
-      }
-    }
-
-    function saveSpeechMode(mode = speechMode) {
-      const normalized = normalizeSpeechMode(mode);
-      try {
-        localStorage.setItem(SPEECH_MODE_STORAGE_KEY, normalized);
-        return true;
-      } catch (_) {
-        return false;
-      }
-    }
-
     function speechModeLabel(mode) {
       return ({
         ru: "ru",
@@ -4241,93 +4089,6 @@
       return String(lang || "").trim().replace(/_/g, "-").toLowerCase();
     }
 
-    function speechLanguageBase(lang) {
-      return normalizeSpeechLanguage(lang).split("-")[0] || "";
-    }
-
-    function clampSpeechVolume(value, fallback = 1) {
-      if (value === null || value === "" || typeof value === "boolean") return fallback;
-      const number = Number(value);
-      if (!Number.isFinite(number)) return fallback;
-      return Math.min(1, Math.max(0, number));
-    }
-
-    function defaultSpeechProfiles() {
-      return {
-        ru: { mode: "auto", volume: 1 },
-        eng: { mode: "auto", volume: 1 }
-      };
-    }
-
-    function normalizeSpeechVoiceRef(ref) {
-      if (!ref || typeof ref !== "object") return null;
-      if (ref.kind === "uri") {
-        if (typeof ref.uri !== "string") return null;
-        const uri = ref.uri.trim();
-        return uri ? { kind: "uri", uri } : null;
-      }
-      if (ref.kind === "descriptor") {
-        if (typeof ref.name !== "string" || typeof ref.lang !== "string" || typeof ref.localService !== "boolean") return null;
-        const name = ref.name.trim();
-        const lang = normalizeSpeechLanguage(ref.lang);
-        if (!name || !lang) return null;
-        return { kind: "descriptor", name, lang, localService: ref.localService };
-      }
-      return null;
-    }
-
-    function normalizeSpeechProfile(profile, fallback = { mode: "auto", volume: 1 }) {
-      const volume = clampSpeechVolume(profile?.volume, clampSpeechVolume(fallback?.volume, 1));
-      if (profile?.mode !== "specific") return { mode: "auto", volume };
-      const ref = normalizeSpeechVoiceRef(profile.voiceRef);
-      if (!ref) return { mode: "auto", volume };
-      const snapshot = profile.snapshot && typeof profile.snapshot === "object"
-        ? {
-            name: String(profile.snapshot.name || "").trim(),
-            lang: normalizeSpeechLanguage(profile.snapshot.lang),
-            localService: profile.snapshot.localService === true
-          }
-        : null;
-      return { mode: "specific", voiceRef: ref, snapshot, volume };
-    }
-
-    function normalizeSpeechProfiles(profiles) {
-      const defaults = defaultSpeechProfiles();
-      return {
-        ru: normalizeSpeechProfile(profiles?.ru, defaults.ru),
-        eng: normalizeSpeechProfile(profiles?.eng, defaults.eng)
-      };
-    }
-
-    function cloneSpeechProfiles(profiles) {
-      return normalizeSpeechProfiles(JSON.parse(JSON.stringify(normalizeSpeechProfiles(profiles))));
-    }
-
-    function loadSpeechProfiles() {
-      try {
-        const parsed = JSON.parse(localStorage.getItem(SPEECH_PROFILE_STORAGE_KEY) || "null");
-        if (!parsed || parsed.version !== 2) return defaultSpeechProfiles();
-        return normalizeSpeechProfiles(parsed.profiles);
-      } catch (_) {
-        return defaultSpeechProfiles();
-      }
-    }
-
-    function saveSpeechProfiles(profiles = speechProfiles) {
-      const normalized = normalizeSpeechProfiles(profiles);
-      try {
-        localStorage.setItem(SPEECH_PROFILE_STORAGE_KEY, JSON.stringify({ version: 2, profiles: normalized }));
-      } catch (_) {
-        return null;
-      }
-      speechProfiles = normalized;
-      return normalized;
-    }
-
-    function speechProfileKeyForLang(lang) {
-      return speechLanguageBase(lang) === "en" ? "eng" : "ru";
-    }
-
     function availableSpeechVoices() {
       if (!speechSupported() || typeof window.speechSynthesis.getVoices !== "function") return [];
       try {
@@ -4337,184 +4098,13 @@
       }
     }
 
-    function speechVoiceURI(voice) {
-      return String(voice?.voiceURI || "").trim();
-    }
-
-    function speechVoiceDescriptor(voice) {
-      const name = String(voice?.name || "").trim();
-      const lang = normalizeSpeechLanguage(voice?.lang);
-      if (!name || !lang) return null;
-      return { name, lang, localService: voice?.localService === true };
-    }
-
-    function speechDescriptorKey(descriptor) {
-      if (!descriptor) return "";
-      return JSON.stringify([
-        String(descriptor.name || "").trim(),
-        normalizeSpeechLanguage(descriptor.lang),
-        descriptor.localService === true ? 1 : 0
-      ]);
-    }
-
-    function speechVoiceIdentity(voice) {
-      const uri = speechVoiceURI(voice);
-      if (uri) return `uri:${uri}`;
-      const descriptor = speechVoiceDescriptor(voice);
-      return descriptor ? `descriptor:${speechDescriptorKey(descriptor)}` : "";
-    }
-
-    function speechLogicalVoices(lang, voices = availableSpeechVoices()) {
-      const requested = normalizeSpeechLanguage(lang);
-      const base = speechLanguageBase(requested);
-      if (!requested || !base) return [];
-      const groups = new Map();
-      voices.forEach(voice => {
-        if (speechLanguageBase(voice?.lang) !== base) return;
-        const identity = speechVoiceIdentity(voice);
-        if (!identity) return;
-        if (!groups.has(identity)) groups.set(identity, []);
-        groups.get(identity).push({ voice });
-      });
-      const stableMemberKey = member => JSON.stringify([
-        String(member.voice?.name || "").trim().toLowerCase(),
-        String(member.voice?.name || "").trim(),
-        normalizeSpeechLanguage(member.voice?.lang),
-        String(member.voice?.lang || "").trim(),
-        member.voice?.localService === true ? 1 : 0,
-        speechVoiceURI(member.voice)
-      ]);
-      const compareStableMember = (a, b) => {
-        const aKey = stableMemberKey(a);
-        const bKey = stableMemberKey(b);
-        return aKey < bKey ? -1 : aKey > bKey ? 1 : 0;
-      };
-      const logical = Array.from(groups.entries()).map(([id, members]) => {
-        const exactMembers = members.filter(member => normalizeSpeechLanguage(member.voice?.lang) === requested);
-        const presentationMembers = exactMembers.length ? exactMembers : members;
-        const stableMember = presentationMembers.slice().sort(compareStableMember)[0] || null;
-        const representative = members.slice().sort((a, b) => {
-          const aExact = normalizeSpeechLanguage(a.voice?.lang) === requested ? 1 : 0;
-          const bExact = normalizeSpeechLanguage(b.voice?.lang) === requested ? 1 : 0;
-          if (aExact !== bExact) return bExact - aExact;
-          const aDefault = a.voice?.default === true ? 1 : 0;
-          const bDefault = b.voice?.default === true ? 1 : 0;
-          if (aDefault !== bDefault) return bDefault - aDefault;
-          return compareStableMember(a, b);
-        })[0]?.voice || null;
-        const presentationVoice = stableMember?.voice || representative || null;
-        const uri = speechVoiceURI(presentationVoice);
-        const descriptor = speechVoiceDescriptor(presentationVoice);
-        return {
-          id,
-          kind: uri ? "uri" : "descriptor",
-          voiceURI: uri,
-          descriptor,
-          name: String(presentationVoice?.name || "").trim(),
-          lang: normalizeSpeechLanguage(presentationVoice?.lang),
-          displayLang: String(presentationVoice?.lang || "").trim(),
-          localService: presentationVoice?.localService === true,
-          exact: members.some(member => normalizeSpeechLanguage(member.voice?.lang) === requested),
-          default: members.some(member => member.voice?.default === true),
-          representative,
-          members: members.map(member => member.voice)
-        };
-      });
-      logical.sort((a, b) => {
-        const aExact = a.exact ? 1 : 0;
-        const bExact = b.exact ? 1 : 0;
-        if (aExact !== bExact) return bExact - aExact;
-        const nameCmp = a.name.localeCompare(b.name, undefined, { sensitivity: "base" });
-        if (nameCmp) return nameCmp;
-        const langCmp = a.lang.localeCompare(b.lang);
-        if (langCmp) return langCmp;
-        return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
-      });
-      return logical;
-    }
-
-    function speechVoiceLabels(choices = [], requestedLang = "") {
-      const requested = normalizeSpeechLanguage(requestedLang);
-      const labels = new Map();
-      choices.forEach(choice => {
-        const baseLabel = choice.lang && choice.lang !== requested
-          ? `${choice.name} (${choice.displayLang || choice.lang})`
-          : choice.name || choice.displayLang || choice.lang || "Голос";
-        labels.set(choice.id, baseLabel);
-      });
-      for (let round = 0; round <= choices.length; round += 1) {
-        const groups = new Map();
-        choices.forEach(choice => {
-          const label = labels.get(choice.id) || "Голос";
-          if (!groups.has(label)) groups.set(label, []);
-          groups.get(label).push(choice);
-        });
-        const duplicates = Array.from(groups.entries()).filter(([, items]) => items.length > 1);
-        if (!duplicates.length) break;
-        duplicates.forEach(([label, items]) => {
-          items.slice().sort((a, b) => a.id.localeCompare(b.id)).forEach((item, index) => {
-            labels.set(item.id, `${label} · ${index + 1}`);
-          });
-        });
-      }
-      return labels;
-    }
-
-    function speechVoiceLabel(choice, choices = [], requestedLang = "") {
-      if (!choice) return "нет доступного голоса";
-      return speechVoiceLabels(choices, requestedLang).get(choice.id)
-        || choice.name || choice.displayLang || choice.lang || "Голос";
-    }
-
-    function speechAutoChoice(lang, voices = availableSpeechVoices()) {
-      const requested = normalizeSpeechLanguage(lang);
-      const choices = speechLogicalVoices(requested, voices);
-      if (!choices.length) return null;
-      const exact = choices.filter(choice => choice.exact);
-      const pool = exact.length ? exact : choices;
-      return pool.slice().sort((a, b) => {
-        const aDefault = a.default ? 1 : 0;
-        const bDefault = b.default ? 1 : 0;
-        if (aDefault !== bDefault) return bDefault - aDefault;
-        return a.id.localeCompare(b.id);
-      })[0] || null;
-    }
-
-    function speechChoiceForRef(lang, ref, voices = availableSpeechVoices()) {
-      const normalizedRef = normalizeSpeechVoiceRef(ref);
-      if (!normalizedRef) return null;
-      const choices = speechLogicalVoices(lang, voices);
-      if (normalizedRef.kind === "uri") {
-        return choices.find(choice => choice.voiceURI === normalizedRef.uri) || null;
-      }
-      const key = speechDescriptorKey(normalizedRef);
-      return choices.find(choice => choice.kind === "descriptor" && speechDescriptorKey(choice.descriptor) === key) || null;
-    }
-
-    function speechVoiceReference(choice) {
-      if (!choice) return null;
-      if (choice.kind === "uri" && choice.voiceURI) return { kind: "uri", uri: choice.voiceURI };
-      const descriptor = choice.descriptor;
-      return descriptor ? { kind: "descriptor", ...descriptor } : null;
-    }
-
-    function speechProfileResolution(lang, profile, voices = availableSpeechVoices()) {
-      const normalized = normalizeSpeechProfile(profile);
-      const autoChoice = speechAutoChoice(lang, voices);
-      if (normalized.mode === "auto") {
-        return { state: "auto", preferred: null, effective: autoChoice, auto: autoChoice };
-      }
-      const preferred = speechChoiceForRef(lang, normalized.voiceRef, voices);
-      if (preferred) return { state: "specific", preferred, effective: preferred, auto: autoChoice };
-      return { state: "unavailable", preferred: null, effective: autoChoice, auto: autoChoice };
-    }
-
     function speechVoiceFor(lang, voices = availableSpeechVoices()) {
-      return speechAutoChoice(lang, voices)?.representative || null;
-    }
-
-    function speechRawVoiceForProfile(lang, profile, voices = availableSpeechVoices()) {
-      return speechProfileResolution(lang, profile, voices).effective?.representative || null;
+      const requested = normalizeSpeechLanguage(lang);
+      if (!requested) return null;
+      const exact = voices.find(voice => normalizeSpeechLanguage(voice?.lang) === requested);
+      if (exact) return exact;
+      const base = requested.split("-")[0];
+      return voices.find(voice => normalizeSpeechLanguage(voice?.lang).split("-")[0] === base) || null;
     }
 
     function spokenNumber(n, lang = "ru-RU") {
@@ -4537,27 +4127,21 @@
       return [ru];
     }
 
-    function speakSpeechItem(item, profiles = speechProfiles, voices = availableSpeechVoices()) {
-      const key = speechProfileKeyForLang(item.lang);
-      const profile = normalizeSpeechProfile(profiles?.[key]);
-      const voice = speechRawVoiceForProfile(item.lang, profile, voices);
-      if (!voice) return false;
-      const utterance = new SpeechSynthesisUtterance(item.text);
-      utterance.voice = voice;
-      utterance.lang = voice.lang || item.lang;
-      utterance.volume = clampSpeechVolume(profile.volume, 1);
-      utterance.rate = state.speechRate || 1.05;
-      utterance.pitch = 1;
-      window.speechSynthesis.speak(utterance);
-      return true;
-    }
-
     function speak(text) {
       if (!state.speechEnabled || !speechSupported()) return;
       try {
         window.speechSynthesis.cancel();
         const voices = availableSpeechVoices();
-        speechSequence(text).forEach(item => { speakSpeechItem(item, speechProfiles, voices); });
+        speechSequence(text).forEach(item => {
+          const voice = speechVoiceFor(item.lang, voices);
+          if (!voice) return;
+          const utterance = new SpeechSynthesisUtterance(item.text);
+          utterance.voice = voice;
+          utterance.lang = voice.lang || item.lang;
+          utterance.rate = state.speechRate || 1.05;
+          utterance.pitch = 1;
+          window.speechSynthesis.speak(utterance);
+        });
       } catch (_) {}
     }
 
@@ -4570,22 +4154,14 @@
       const modeChanged = nextEnabled && speechMode !== nextMode;
       if (enabledChanged || modeChanged) cancelSpeech();
       state.speechEnabled = nextEnabled;
-      let modeSaveFailed = false;
-      if (nextEnabled) {
-        speechMode = nextMode;
-        modeSaveFailed = !saveSpeechMode(speechMode);
-      }
+      if (nextEnabled) speechMode = nextMode;
       if (enabledChanged) saveState();
       closeModal();
       updateHandicapPlayerNames();
       render();
-      if (modeSaveFailed) {
-        window.setTimeout(() => alert("Режим озвучивания применён, но не удалось сохранить его на этом устройстве."), 0);
-      }
     }
 
     function showSpeechModeModal() {
-      speechProfileDraft = null;
       const wrapper = document.createElement("div");
       wrapper.className = "modal-control-group";
 
@@ -4623,219 +4199,12 @@
       showModal(
         "Озвучивание счёта",
         "Выберите язык и порядок озвучивания.",
-        [
-          makeButton("Голоса и громкость", "primary", showSpeechProfilesModal),
-          makeButton("Закрыть", "secondary", closeModal)
-        ],
+        [makeButton("Закрыть", "secondary", closeModal)],
         [],
         wrapper
       );
       activeModal = "speechMode";
       window.setTimeout(() => els.modalControls.querySelector("button[aria-pressed='true']")?.focus(), 0);
-    }
-
-    function speechProfileSpecs() {
-      return [
-        { key: "ru", title: "Русский", lang: "ru-RU", preview: "ноль один" },
-        { key: "eng", title: "English", lang: "en-GB", preview: "zero one" }
-      ];
-    }
-
-    function speechUnavailableLabel(profile, requestedLang) {
-      const snapshot = profile?.snapshot;
-      const name = String(snapshot?.name || "").trim();
-      const lang = normalizeSpeechLanguage(snapshot?.lang);
-      if (!name) return "Недоступен — ранее выбранный голос";
-      return lang && lang !== normalizeSpeechLanguage(requestedLang)
-        ? `Недоступен — ${name} (${lang})`
-        : `Недоступен — ${name}`;
-    }
-
-    function updateSpeechDraftChoice(key, lang, select, voices) {
-      if (!speechProfileDraft) return;
-      const current = normalizeSpeechProfile(speechProfileDraft[key]);
-      if (select.value === "auto") {
-        speechProfileDraft[key] = { mode: "auto", volume: current.volume };
-        renderSpeechProfilesModal();
-        return;
-      }
-      const choice = speechLogicalVoices(lang, voices).find(item => item.id === select.value);
-      if (!choice) return;
-      speechProfileDraft[key] = {
-        mode: "specific",
-        voiceRef: speechVoiceReference(choice),
-        snapshot: { name: choice.name, lang: choice.lang, localService: choice.localService },
-        volume: current.volume
-      };
-      renderSpeechProfilesModal();
-    }
-
-    function previewSpeechProfile(key) {
-      if (!speechSupported() || !speechProfileDraft) return;
-      const spec = speechProfileSpecs().find(item => item.key === key);
-      if (!spec) return;
-      try {
-        cancelSpeech();
-        const voices = availableSpeechVoices();
-        speakSpeechItem({ text: spec.preview, lang: spec.lang }, speechProfileDraft, voices);
-      } catch (_) {}
-    }
-
-    function buildSpeechProfileCard(spec, voices) {
-      const profile = normalizeSpeechProfile(speechProfileDraft?.[spec.key]);
-      const choices = speechLogicalVoices(spec.lang, voices);
-      const resolution = speechProfileResolution(spec.lang, profile, voices);
-      const card = document.createElement("section");
-      card.className = "speech-profile-card";
-
-      const heading = document.createElement("div");
-      heading.className = "speech-profile-heading";
-      const title = document.createElement("strong");
-      title.textContent = spec.title;
-      const locale = document.createElement("span");
-      locale.textContent = spec.lang;
-      heading.append(title, locale);
-
-      const voiceField = document.createElement("div");
-      voiceField.className = "speech-profile-field";
-      const voiceLabel = document.createElement("label");
-      voiceLabel.textContent = "Голос";
-      const select = document.createElement("select");
-      select.setAttribute("aria-label", `${spec.title}: голос`);
-      const auto = document.createElement("option");
-      auto.value = "auto";
-      auto.textContent = resolution.auto
-        ? `Авто — ${speechVoiceLabel(resolution.auto, choices, spec.lang)}`
-        : "Авто — нет доступного голоса";
-      select.append(auto);
-
-      choices.forEach(choice => {
-        const option = document.createElement("option");
-        option.value = choice.id;
-        option.textContent = speechVoiceLabel(choice, choices, spec.lang);
-        select.append(option);
-      });
-
-      if (profile.mode === "specific") {
-        if (resolution.state === "specific" && resolution.preferred) {
-          select.value = resolution.preferred.id;
-        } else {
-          const missing = document.createElement("option");
-          missing.value = "unavailable";
-          missing.textContent = speechUnavailableLabel(profile, spec.lang);
-          missing.disabled = true;
-          missing.selected = true;
-          select.append(missing);
-        }
-      } else {
-        select.value = "auto";
-      }
-      select.addEventListener("change", () => updateSpeechDraftChoice(spec.key, spec.lang, select, voices));
-      voiceField.append(voiceLabel, select);
-
-      const volumeField = document.createElement("div");
-      volumeField.className = "speech-profile-field";
-      const volumeLabel = document.createElement("label");
-      volumeLabel.textContent = "Громкость";
-      const volumeRow = document.createElement("div");
-      volumeRow.className = "speech-volume-row";
-      const slider = document.createElement("input");
-      slider.type = "range";
-      slider.min = "0";
-      slider.max = "1";
-      slider.step = "0.05";
-      slider.value = String(profile.volume);
-      slider.style.setProperty("--speech-volume-pct", `${Math.round(profile.volume * 100)}%`);
-      slider.setAttribute("aria-label", `${spec.title}: громкость`);
-      const value = document.createElement("span");
-      value.className = "speech-volume-value";
-      value.textContent = `${Math.round(profile.volume * 100)}%`;
-      slider.addEventListener("input", () => {
-        if (!speechProfileDraft) return;
-        const next = normalizeSpeechProfile(speechProfileDraft[spec.key]);
-        next.volume = clampSpeechVolume(slider.value, next.volume);
-        speechProfileDraft[spec.key] = next;
-        const percent = Math.round(next.volume * 100);
-        slider.style.setProperty("--speech-volume-pct", `${percent}%`);
-        value.textContent = `${percent}%`;
-      });
-      volumeRow.append(slider, value);
-      volumeField.append(volumeLabel, volumeRow);
-
-      const preview = makeButton("Проверить", "speech-profile-preview", () => previewSpeechProfile(spec.key));
-      const status = document.createElement("div");
-      status.className = `speech-profile-status${resolution.state === "unavailable" || !resolution.effective ? " warning" : ""}`;
-      if (resolution.state === "unavailable") {
-        status.textContent = resolution.effective
-          ? `Выбранный голос недоступен. Сейчас используется Авто — ${speechVoiceLabel(resolution.effective, choices, spec.lang)}.`
-          : "Выбранный голос недоступен. Совместимого голоса сейчас нет.";
-      } else if (!resolution.effective) {
-        status.textContent = "Совместимого голоса сейчас нет.";
-      } else {
-        status.textContent = "";
-      }
-
-      card.append(heading, voiceField, volumeField, preview, status);
-      return card;
-    }
-
-    function renderSpeechProfilesModal(saveError = "") {
-      if (!speechProfileDraft) return;
-      const voices = availableSpeechVoices();
-      const wrapper = document.createElement("div");
-      wrapper.className = "speech-profile-stack";
-      if (saveError) {
-        const warning = document.createElement("div");
-        warning.className = "speech-profile-status warning";
-        warning.setAttribute("role", "alert");
-        warning.textContent = saveError;
-        wrapper.append(warning);
-      }
-      speechProfileSpecs().forEach(spec => wrapper.append(buildSpeechProfileCard(spec, voices)));
-      activeModal = "speechProfiles";
-      showModal(
-        "Голоса и громкость",
-        "Настройки сохраняются на этом устройстве. Авто выбирает только голос того же языка.",
-        [
-          makeButton("Сохранить", "primary", saveSpeechProfileDraft),
-          makeButton("Назад", "secondary", backFromSpeechProfiles)
-        ],
-        [],
-        wrapper
-      );
-      activeModal = "speechProfiles";
-      if (saveError) {
-        const modal = els.modalBackdrop.querySelector(".modal");
-        if (modal) modal.scrollTop = 0;
-      }
-    }
-
-    function showSpeechProfilesModal() {
-      cancelSpeech();
-      speechProfileDraft = cloneSpeechProfiles(speechProfiles);
-      renderSpeechProfilesModal();
-    }
-
-    function backFromSpeechProfiles() {
-      cancelSpeech();
-      speechProfileDraft = null;
-      showSpeechModeModal();
-    }
-
-    function saveSpeechProfileDraft() {
-      if (!speechProfileDraft) return;
-      cancelSpeech();
-      const saved = saveSpeechProfiles(speechProfileDraft);
-      if (!saved) {
-        renderSpeechProfilesModal("Не удалось сохранить настройки на этом устройстве. Изменения не применены.");
-        return;
-      }
-      speechProfileDraft = null;
-      showSpeechModeModal();
-    }
-
-    function refreshSpeechProfilesForVoicesChanged() {
-      if (activeModal === "speechProfiles" && speechProfileDraft) renderSpeechProfilesModal();
     }
 
     function repeatSpeech() {
@@ -5201,6 +4570,7 @@
       historyStack = [];
       const oldPlayers = state.players;
       state = defaultState();
+      speechMode = "ru";
       if (!clearPlayers) state.players = oldPlayers;
       setupFormat = state.format;
       setupMatchDate = state.matchDate;
@@ -5231,6 +4601,7 @@
       }
       historyStack = [];
       state = defaultState();
+      speechMode = "ru";
       state.matchDate = matchDate;
       state.matchId = createMatchId(matchDate, lastMatchId);
       state.recordCreatedAt = new Date().toISOString();
@@ -5385,10 +4756,6 @@
     }
 
     function closeModal() {
-      if (activeModal === "speechProfiles") {
-        cancelSpeech();
-        speechProfileDraft = null;
-      }
       els.modalBackdrop.classList.remove("show");
       els.modalControls.replaceChildren();
       els.modalControls.hidden = true;
@@ -6493,7 +5860,7 @@
         },
         createdBy: {
           application: "ttScore",
-          version: "0.8.2"
+          version: "0.6.1"
         },
         match: {
           date: state.matchDate,
@@ -7240,7 +6607,7 @@
       appLinkLine.append(appLink);
       const version = document.createElement("p");
       version.className = "app-version";
-      version.textContent = "Версия 0.8.2";
+      version.textContent = "Версия 0.6.1";
       footer.append(dataEnteredLine, appLinkLine, version);
       screen.append(footer);
       root.append(screen);
@@ -8207,9 +7574,6 @@ ${buildStandaloneReportRoot().outerHTML}
     els.undoButton.addEventListener("click", undo);
     els.speechButton.addEventListener("click", showSpeechModeModal);
     els.speechRepeatButton.addEventListener("click", repeatSpeech);
-    if (speechSupported() && typeof window.speechSynthesis.addEventListener === "function") {
-      window.speechSynthesis.addEventListener("voiceschanged", refreshSpeechProfilesForVoicesChanged);
-    }
     els.menuButton.addEventListener("click", showMenu);
     els.copyLivePublishErrorButton.addEventListener("click", event => {
       void copyLiveDiagnostic("автор", livePublishError || els.livePublishStatusText.textContent, event.currentTarget);

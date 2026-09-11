@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#0b1020" />
   <meta name="ttscore-build" content="compact-live-scoreboard-2" />
-  <title>ttScore 0.8.2</title>
+  <title>ttScore 0.8.1</title>
   <style>
     :root {
       --bg: #0b1020;
@@ -547,54 +547,8 @@
       align-items: center;
     }
     .speech-volume-row input[type="range"] {
-      --speech-volume-pct: 100%;
-      --speech-volume-thumb: 24px;
-      -webkit-appearance: none;
-      appearance: none;
       width: 100%;
-      height: 28px;
-      margin: 0;
-      padding: 0;
-      background:
-        linear-gradient(90deg, var(--accent) 0 var(--speech-volume-pct), rgba(255,255,255,.34) var(--speech-volume-pct) 100%)
-        center / calc(100% - var(--speech-volume-thumb)) 4px no-repeat;
-      border: 0;
-      border-radius: 999px;
-    }
-    .speech-volume-row input[type="range"]::-webkit-slider-runnable-track {
-      height: 4px;
-      background: transparent;
-      border: 0;
-    }
-    .speech-volume-row input[type="range"]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: var(--speech-volume-thumb);
-      height: var(--speech-volume-thumb);
-      margin-top: -10px;
-      border: 1px solid rgba(0,0,0,.18);
-      border-radius: 50%;
-      background: #fff;
-      box-shadow: 0 1px 4px rgba(0,0,0,.28);
-    }
-    .speech-volume-row input[type="range"]::-moz-range-track {
-      height: 4px;
-      border: 0;
-      border-radius: 999px;
-      background: rgba(255,255,255,.34);
-    }
-    .speech-volume-row input[type="range"]::-moz-range-progress {
-      height: 4px;
-      border-radius: 999px;
-      background: var(--accent);
-    }
-    .speech-volume-row input[type="range"]::-moz-range-thumb {
-      width: var(--speech-volume-thumb);
-      height: var(--speech-volume-thumb);
-      border: 1px solid rgba(0,0,0,.18);
-      border-radius: 50%;
-      background: #fff;
-      box-shadow: 0 1px 4px rgba(0,0,0,.28);
+      accent-color: var(--accent);
     }
     .speech-volume-value {
       min-width: 48px;
@@ -2135,7 +2089,7 @@
         <button class="primary" id="startButton" type="button">Начать встречу из 5 партий</button>
         <button class="secondary" id="openJsonButton" type="button">Посмотреть сохранённый отчёт</button>
         <p class="tiny">По умолчанию данные остаются в браузере. Live-публикация включается отдельно из меню встречи.</p>
-        <p class="app-version">Версия 0.8.2</p>
+        <p class="app-version">Версия 0.8.1</p>
       </div>
     </section>
 
@@ -2315,7 +2269,7 @@
       <footer class="stat-report-footer" id="statReportFooter">
         <p id="statDataEnteredLine" hidden>Данные введены: <time id="statDataEnteredAt"></time></p>
         <p id="statAppLinkLine" hidden><a href="https://t39s.github.io/ttscore/" target="_blank" rel="noopener noreferrer">https://t39s.github.io/ttscore/</a></p>
-        <p class="app-version">Версия 0.8.2</p>
+        <p class="app-version">Версия 0.8.1</p>
       </footer>
     </section>
 
@@ -2346,7 +2300,7 @@
         <div class="live-scoreboard-server-indicator live-scoreboard-server-right" id="liveScoreboardRightPlayer" aria-label="Подающий справа"></div>
       </div>
       <p class="visually-hidden" id="liveScoreboardServer" hidden></p>
-      <p class="live-scoreboard-footer">Версия 0.8.2</p>
+      <p class="live-scoreboard-footer">Версия 0.8.1</p>
     </section>
   </main>
 
@@ -2376,7 +2330,6 @@
     const LIVE_STATE_MAX_JSON_BYTES = 16 * 1024;
     const LIVE_SCOREBOARD_PERSPECTIVE_STORAGE_KEY = "ttScore:liveScoreboardPerspective:v1";
     const SPEECH_PROFILE_STORAGE_KEY = "ttScore:speechProfiles:v2";
-    const SPEECH_MODE_STORAGE_KEY = "ttScore:speechMode:v1";
     const FIREBASE_SDK_VERSION = "12.17.1";
     const LIVE_FIREBASE_CONFIG = Object.freeze({
       apiKey: "AIzaSyAl_-dvsuM7g4hvuUZtt3mNcMc7a0Kztnw",
@@ -2569,7 +2522,7 @@
     let pendingRestoreState = PAGE_CAPABILITIES.writesLocalMeeting && storedMeeting?.needsConfirmation ? storedMeeting.state : null;
     let state = storedMeeting && (IS_REPORT_PAGE || !storedMeeting.needsConfirmation) ? storedMeeting.state : defaultState();
     if (IS_TEAM_MODE) state.speechEnabled = false;
-    let speechMode = loadSpeechMode();
+    let speechMode = "ru";
     let speechProfiles = loadSpeechProfiles();
     let speechProfileDraft = null;
     let importedCanonicalSource = importedSessionResult?.source || null;
@@ -3389,7 +3342,7 @@
       const pageUrl = new URL(location.href);
       pageUrl.hash = "";
       return [
-        "ttScore 0.8.2 — first-server-normalization 1",
+        "ttScore 0.8.1 — first-server-normalization 1",
         `Роль: ${role}`,
         `Ошибка: ${message || "Неизвестная ошибка"}`,
         `Время: ${new Date().toISOString()}`,
@@ -4192,28 +4145,6 @@
       return "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
     }
 
-    function normalizeSpeechMode(mode) {
-      return ["ru", "ru+eng", "eng+ru", "eng"].includes(mode) ? mode : "ru";
-    }
-
-    function loadSpeechMode() {
-      try {
-        return normalizeSpeechMode(localStorage.getItem(SPEECH_MODE_STORAGE_KEY));
-      } catch (_) {
-        return "ru";
-      }
-    }
-
-    function saveSpeechMode(mode = speechMode) {
-      const normalized = normalizeSpeechMode(mode);
-      try {
-        localStorage.setItem(SPEECH_MODE_STORAGE_KEY, normalized);
-        return true;
-      } catch (_) {
-        return false;
-      }
-    }
-
     function speechModeLabel(mode) {
       return ({
         ru: "ru",
@@ -4570,18 +4501,11 @@
       const modeChanged = nextEnabled && speechMode !== nextMode;
       if (enabledChanged || modeChanged) cancelSpeech();
       state.speechEnabled = nextEnabled;
-      let modeSaveFailed = false;
-      if (nextEnabled) {
-        speechMode = nextMode;
-        modeSaveFailed = !saveSpeechMode(speechMode);
-      }
+      if (nextEnabled) speechMode = nextMode;
       if (enabledChanged) saveState();
       closeModal();
       updateHandicapPlayerNames();
       render();
-      if (modeSaveFailed) {
-        window.setTimeout(() => alert("Режим озвучивания применён, но не удалось сохранить его на этом устройстве."), 0);
-      }
     }
 
     function showSpeechModeModal() {
@@ -4745,7 +4669,6 @@
       slider.max = "1";
       slider.step = "0.05";
       slider.value = String(profile.volume);
-      slider.style.setProperty("--speech-volume-pct", `${Math.round(profile.volume * 100)}%`);
       slider.setAttribute("aria-label", `${spec.title}: громкость`);
       const value = document.createElement("span");
       value.className = "speech-volume-value";
@@ -4755,9 +4678,7 @@
         const next = normalizeSpeechProfile(speechProfileDraft[spec.key]);
         next.volume = clampSpeechVolume(slider.value, next.volume);
         speechProfileDraft[spec.key] = next;
-        const percent = Math.round(next.volume * 100);
-        slider.style.setProperty("--speech-volume-pct", `${percent}%`);
-        value.textContent = `${percent}%`;
+        value.textContent = `${Math.round(next.volume * 100)}%`;
       });
       volumeRow.append(slider, value);
       volumeField.append(volumeLabel, volumeRow);
@@ -5201,6 +5122,7 @@
       historyStack = [];
       const oldPlayers = state.players;
       state = defaultState();
+      speechMode = "ru";
       if (!clearPlayers) state.players = oldPlayers;
       setupFormat = state.format;
       setupMatchDate = state.matchDate;
@@ -5231,6 +5153,7 @@
       }
       historyStack = [];
       state = defaultState();
+      speechMode = "ru";
       state.matchDate = matchDate;
       state.matchId = createMatchId(matchDate, lastMatchId);
       state.recordCreatedAt = new Date().toISOString();
@@ -6493,7 +6416,7 @@
         },
         createdBy: {
           application: "ttScore",
-          version: "0.8.2"
+          version: "0.8.1"
         },
         match: {
           date: state.matchDate,
@@ -7240,7 +7163,7 @@
       appLinkLine.append(appLink);
       const version = document.createElement("p");
       version.className = "app-version";
-      version.textContent = "Версия 0.8.2";
+      version.textContent = "Версия 0.8.1";
       footer.append(dataEnteredLine, appLinkLine, version);
       screen.append(footer);
       root.append(screen);

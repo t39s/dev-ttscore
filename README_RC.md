@@ -1,20 +1,19 @@
-# ttScore integration v0.5.1 + v0.11.1 RC1
+# ttScore 0.8.1 + ttscore_team 0.11.1 RC15
 
-Publication/runtime-entrypoint stabilization candidate derived from owner-accepted RC16.
+## Status
 
-## Runtime package contract
-- `./index.html` == `./ttscore_0.5.1.html` byte-for-byte;
-- `./team/index.html` == `./team/ttscore_team_0.11.1.html` byte-for-byte;
-- Team launches ttScore through `../index.html`;
-- old `ttScore_0.5.0.html` is absent.
+Docs-only review stabilization of RC14.
 
-The intentional Team integration adapter remains under `team/assets/0.10.0/`, with only its required dependency closure.
+- Runtime remains byte-identical to RC14: `ttScore 0.8.1 + ttscore_team 0.11.1`.
+- RC14 independent review found no runtime MEDIUM+ defect.
+- RC14 is superseded because its package contained inherited top-level historical `RC14` documents that collided with the current candidate number and could direct the owner to the wrong review/checklist.
+- Conflicting historical documents are preserved byte-for-byte under `docs/history/inherited_scoreboard_rc14/`.
+- RC14 Speech Voice Profiles release metadata is preserved under `docs/history/rc14_speech_reset_release/`.
+- Stable owner-accepted baseline remains RC4 until explicit owner acceptance.
+- Engineering decision: `ESCALATE` only for owner-controlled Safari/WebKit device verification.
 
-## Verification
-- Node: 274/274 PASS;
-- browser autonomous 6/6; Team E2E 19/19; pending rebase 10/10; report backup 15/15;
-- realtime editor, revision guard, write-race: PASS;
-- scoreboard 6/6 + viewport 5/5;
-- syntax, byte-equivalence and package-contract checks: PASS.
+## Runtime verification
 
-Decision inside the product goal: CONTINUE to 0.6.0 rebase. Owner acceptance is still required.
+RC14 → RC15 runtime/test boundary is byte-identical. The final RC15 package is rechecked after clean extraction.
+
+See `docs/GENERAL_REVIEW.md`, `docs/EVIDENCE.md`, `docs/OWNER_ACCEPTANCE_CHECKLIST.md`, and `docs/DOCS_NAMESPACE_STABILIZATION_RC15.md`.
