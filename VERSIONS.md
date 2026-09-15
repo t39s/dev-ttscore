@@ -7,12 +7,12 @@ Artifact stage is represented by the outer archive filename and is not a separat
 | Component | Version | Change |
 |---|---:|---|
 | ttScore suite | 0.3.0 | Release 3 target: automatic Team-bound Live |
-| ttScore | 0.9.1 | automatic Live controller plus Team-finalization race fix, recovery, pause/resume and TTL replacement |
+| ttScore | 0.9.3 | automatic Live controller plus transition/finalization stabilization for delayed or failed old-source cleanup |
 | ttscore_team | 0.12.0 | unchanged from accepted Release-2 baseline |
 
 Current dependency closure:
 
-- `index.html` = `ttscore_0.9.1.html` byte-for-byte;
+- `index.html` = `ttscore_0.9.3.html` byte-for-byte;
 - ttScore continues to import the accepted historical `team/assets/0.11.9/ttscore-team-adapter.mjs` integration closure;
 - all `team/assets/0.11.9/` and `team/assets/0.12.0/` bytes are unchanged from the accepted Release-2 baseline;
 - `team/index.html`, `team/live.html` and `team/ttscore_team_0.12.0.html` are unchanged from the accepted Release-2 baseline;

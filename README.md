@@ -4,7 +4,7 @@ Release 3 adds automatic Live publication for a started personal match that has 
 
 ## Components
 
-- **ttScore 0.9.1** — scoring, reports and Live; Team mode starts/resumes Live automatically and suppresses auto-Live while the previous Team personal match is being finalized.
+- **ttScore 0.9.3** — scoring, reports and Live; Team mode starts/resumes Live automatically and retires the previous Live source without allowing a delayed Firebase operation to block or mutate the next personal match.
 - **ttscore_team 0.12.0** — unchanged from the accepted Release-2 baseline; permanent Team scoreboard/report links remain the viewer entrypoints.
 
 Baseline for this cycle: accepted `ttscore_suite_0.2.0-rc.7.zip`, SHA-256 `9be552696b718d874fc977dd95c6fa1a3f23551ecc2069e9c50f90f18df9c842`.
@@ -15,14 +15,16 @@ After Umpire starts the current assigned personal match and its Team binding/loc
 
 Repeated start/auth/online/reload events converge on the existing publication instead of creating another source. Temporary publication or Team-link handoff failures retry without changing the sporting result.
 
+When a finished personal match is finalized, its Live source is retired from the local publisher lifecycle before the next personal match can auto-publish. Physical deletion of the old Firebase source is cleanup: after ownership is confirmed it may be deferred, including when an old Firebase write is still pending. Any late completion of the retired source is isolated from the new source and queued for cleanup.
+
 Umpire can explicitly **Pause Live** and **Resume Live**. Pause is stored for the current Team in the current browser profile and survives reload, reconnect and the transition to the next personal match until explicit resume. While paused, Team Live URLs are cleared so permanent viewers show waiting.
 
 Standalone mode is unchanged: Live remains manual and no Team Result/Live write is inferred without a valid Team binding.
 
 ## Entry points
 
-- `index.html` — ttScore 0.9.1
-- `ttscore_0.9.1.html` — versioned ttScore entrypoint; byte-identical to `index.html`
+- `index.html` — ttScore 0.9.3
+- `ttscore_0.9.3.html` — versioned ttScore entrypoint; byte-identical to `index.html`
 - `team/index.html` — ttscore_team 0.12.0
 - `team/live.html?match=<team-id>&view=scoreboard|report` — permanent Team viewers
 
