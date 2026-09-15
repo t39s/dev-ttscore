@@ -1,42 +1,33 @@
-# ttScore suite 0.2.0 — Release Candidate 6
+# ttScore suite 0.3.0
 
-Integrated table-tennis scoring suite.
+Release 3 adds automatic Live publication for a started personal match that has a valid current Team binding.
 
 ## Components
 
-- **ttScore 0.8.7** — unchanged from accepted 0.1.7 baseline.
-- **ttscore_team 0.12.0** — Team administration plus permanent public Team Live viewers.
+- **ttScore 0.9.0** — scoring, reports and Live; Team mode now starts/resumes Live automatically.
+- **ttscore_team 0.12.0** — unchanged from the accepted Release-2 baseline; permanent Team scoreboard/report links remain the viewer entrypoints.
 
-## Entrypoints
+Baseline for this cycle: accepted `ttscore_suite_0.2.0-rc.7.zip`, SHA-256 `9be552696b718d874fc977dd95c6fa1a3f23551ecc2069e9c50f90f18df9c842`.
 
-- `index.html` — ttScore.
-- `team/index.html` — Team create/edit/view.
-- `team/live.html?match=<team-id>&view=scoreboard` — permanent public Team scoreboard.
-- `team/live.html?match=<team-id>&view=report` — permanent public Team report.
+## Team-mode Auto Live
 
-## RC6 lineage
+After Umpire starts the current assigned personal match and its Team binding/local state are saved successfully, ttScore automatically creates or resumes the existing Live publication. After the first Firebase Live snapshot is confirmed, the direct scoreboard/report URLs are synchronized to Team and the permanent Team viewer URLs continue to follow the current personal match.
 
-RC6 is built **directly from RC3**.
+Repeated start/auth/online/reload events converge on the existing publication instead of creating another source. Temporary publication or Team-link handoff failures retry without changing the sporting result.
 
-The only runtime change from RC3 is in `team/assets/0.12.0/live-viewer.css`:
+Umpire can explicitly **Pause Live** and **Resume Live**. Pause is stored for the current Team in the current browser profile and survives reload, reconnect and the transition to the next personal match until explicit resume. While paused, Team Live URLs are cleared so permanent viewers show waiting.
 
-```css
-[hidden] { display: none !important; }
-```
+Standalone mode is unchanged: Live remains manual and no Team Result/Live write is inferred without a valid Team binding.
 
-This fixes a field-observed presentation defect where JavaScript correctly toggled the HTML `hidden` attribute, but `.viewer__status { display: grid; }` / `.viewer__frame { display: block; }` could keep the stale status visible over an already working Live iframe.
+## Entry points
 
-All JavaScript runtime files are byte-identical to RC3.
+- `index.html` — ttScore 0.9.0
+- `ttscore_0.9.0.html` — versioned ttScore entrypoint; byte-identical to `index.html`
+- `team/index.html` — ttscore_team 0.12.0
+- `team/live.html?match=<team-id>&view=scoreboard|report` — permanent Team viewers
 
 ## Verification
 
-- full Node regression: **177/177 PASS**;
-- focused Release-2 tests: **21/21 PASS**;
-- syntax/static/runtime-lineage checks: PASS;
-- RC3 browser evidence remains applicable to the unchanged JavaScript/state-machine runtime; the RC6 hidden-state CSS contract has dedicated regression coverage.
+See `VERIFICATION.md`, `docs/GENERAL_REVIEW.md`, `docs/RESEARCH.md`, `docs/PLAN.md`, and `evidence/`.
 
-A field retest of the exact RC6 bytes is still required before final/STOP.
-
-## Known issues
-
-`KNOWN_ISSUES.md` is the sole normative registry of accepted product limitations.
+`KNOWN_ISSUES.md` is the sole normative registry of accepted current limitations.
