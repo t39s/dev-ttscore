@@ -4,7 +4,7 @@ Release 3 adds automatic Live publication for a started personal match that has 
 
 ## Components
 
-- **ttScore 0.9.0** — scoring, reports and Live; Team mode now starts/resumes Live automatically.
+- **ttScore 0.9.1** — scoring, reports and Live; Team mode starts/resumes Live automatically and suppresses auto-Live while the previous Team personal match is being finalized.
 - **ttscore_team 0.12.0** — unchanged from the accepted Release-2 baseline; permanent Team scoreboard/report links remain the viewer entrypoints.
 
 Baseline for this cycle: accepted `ttscore_suite_0.2.0-rc.7.zip`, SHA-256 `9be552696b718d874fc977dd95c6fa1a3f23551ecc2069e9c50f90f18df9c842`.
@@ -21,8 +21,8 @@ Standalone mode is unchanged: Live remains manual and no Team Result/Live write 
 
 ## Entry points
 
-- `index.html` — ttScore 0.9.0
-- `ttscore_0.9.0.html` — versioned ttScore entrypoint; byte-identical to `index.html`
+- `index.html` — ttScore 0.9.1
+- `ttscore_0.9.1.html` — versioned ttScore entrypoint; byte-identical to `index.html`
 - `team/index.html` — ttscore_team 0.12.0
 - `team/live.html?match=<team-id>&view=scoreboard|report` — permanent Team viewers
 
