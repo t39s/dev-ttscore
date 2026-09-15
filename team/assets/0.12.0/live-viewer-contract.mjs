@@ -80,7 +80,7 @@ export function deriveTeamLiveViewerPresentation(teamMatch, view, connected = tr
       pair,
       state: "waiting",
       frameUrl: null,
-      heading: "Ожидание Live",
+      heading: "Ожидание live-трансляции",
       message: `${pair}. Umpire ещё не опубликовал актуальный Live для этой личной встречи.`
     };
   }
