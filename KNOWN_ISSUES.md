@@ -33,7 +33,7 @@ This file is the **single normative registry** of known product defects/accepted
 - Severity: **MEDIUM**
 - Likelihood: **LOW, inferred rather than measured; requires legacy migration plus the narrow Undo/reassignment identity condition**
 - Exposure: **VERY LOW / LEGACY MIGRATION ONLY**
-- Recoverability: **GOOD** — pause Live, complete/manual-recover the Team state, or leave the legacy migration path; sporting Team state is not changed by Live publication itself.
+- Recoverability: **GOOD** — complete/manual-recover the Team state or leave the legacy migration path; sporting Team state is not changed by Live publication itself.
 - Product risk: **LOW**
 - Decision: **ACCEPT**
 - Rationale: Release 3 creates a concrete new viewer-facing effect for the already accepted R01 migration condition, so the effect is explicitly recorded rather than hidden behind the old acceptance. The scenario is restricted to legacy active bindings; new/current-line bindings carry assignment generation and are protected by exact attempt checks and Team transaction validation. The owner previously accepted R01 as nonblocking and the Release-3 goal explicitly says not to make that legacy repair a separate release condition unless the new effect materially changes risk. The added viewer exposure remains low product risk and does not alter sporting results.
