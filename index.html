@@ -4524,6 +4524,24 @@
       return restored;
     }
 
+    function setLiveViewerStatus(nextState, text) {
+      if (!els.liveViewerStatus) return;
+      liveViewerError = nextState === "error" || nextState === "offline" ? text : "";
+      els.liveViewerStatus.hidden = !IS_LIVE_REPORT;
+      els.liveViewerStatus.dataset.state = nextState;
+      els.liveViewerStatusText.textContent = text;
+      els.copyLiveViewerErrorButton.hidden = !liveViewerError;
+    }
+
+    function setLiveScoreboardStatus(nextState, text) {
+      if (!els.liveScoreboardStatus) return;
+      liveViewerError = nextState === "error" || nextState === "offline" ? text : "";
+      els.liveScoreboardStatus.hidden = nextState === "live";
+      els.liveScoreboardStatus.dataset.state = nextState;
+      els.liveScoreboardStatusText.textContent = text;
+      els.copyLiveScoreboardErrorButton.hidden = !liveViewerError;
+    }
+
     async function startLiveReportSubscription() {
       liveReportLoading = true;
       importLoadError = "";
