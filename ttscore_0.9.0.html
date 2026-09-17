@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#0b1020" />
   <meta name="ttscore-build" content="compact-live-scoreboard-2" />
-  <title>ttScore 0.9.6</title>
+  <title>ttScore 0.9.0</title>
   <style>
     :root {
       --bg: #0b1020;
@@ -2057,6 +2057,7 @@
           </form>
           <div class="team-context-actions">
             <button class="secondary" id="teamReloadButton" type="button">Перечитать Team</button>
+            <button class="secondary" id="teamAutoLiveButton" type="button">Приостановить авто-Live</button>
             <button class="secondary" id="teamExitButton" type="button">Автономный режим</button>
           </div>
         </section>
@@ -2135,7 +2136,7 @@
         <button class="primary" id="startButton" type="button">Начать встречу из 5 партий</button>
         <button class="secondary" id="openJsonButton" type="button">Посмотреть сохранённый отчёт</button>
         <p class="tiny">В Team mode Live запускается автоматически после начала привязанной встречи. В автономном режиме Live включается вручную из меню встречи.</p>
-        <p class="app-version">Версия 0.9.6</p>
+        <p class="app-version">Версия 0.9.0</p>
       </div>
     </section>
 
@@ -2315,7 +2316,7 @@
       <footer class="stat-report-footer" id="statReportFooter">
         <p id="statDataEnteredLine" hidden>Данные введены: <time id="statDataEnteredAt"></time></p>
         <p id="statAppLinkLine" hidden><a href="https://t39s.github.io/ttscore/" target="_blank" rel="noopener noreferrer">https://t39s.github.io/ttscore/</a></p>
-        <p class="app-version">Версия 0.9.6</p>
+        <p class="app-version">Версия 0.9.0</p>
       </footer>
     </section>
 
@@ -2346,7 +2347,7 @@
         <div class="live-scoreboard-server-indicator live-scoreboard-server-right" id="liveScoreboardRightPlayer" aria-label="Подающий справа"></div>
       </div>
       <p class="visually-hidden" id="liveScoreboardServer" hidden></p>
-      <p class="live-scoreboard-footer">Версия 0.9.6</p>
+      <p class="live-scoreboard-footer">Версия 0.9.0</p>
     </section>
   </main>
 
@@ -2436,7 +2437,7 @@
     // Team integration protocol namespace is intentionally preserved from accepted 0.4.0
     // so an in-flight binding/pending release survives an application upgrade.
     const TEAM_SESSION_KEY = "ttScore:0.4.0:teamIntegration:v1";
-    const TEAM_ADAPTER_MODULE_URL = new URL("./team/assets/0.12.1/ttscore-team-adapter.mjs", location.href).toString();
+    const TEAM_ADAPTER_MODULE_URL = new URL("./team/assets/0.11.9/ttscore-team-adapter.mjs", location.href).toString();
     const requestedTeamMatchId = pageParams.get("teamMatch");
     const TEAM_MODE_REQUESTED = PAGE_MODE === "score" && requestedTeamMatchId !== null;
     const TEAM_MATCH_ID = TEAM_MODE_REQUESTED && TEAM_MATCH_ID_PATTERN.test(requestedTeamMatchId || "") ? requestedTeamMatchId : "";
@@ -2589,9 +2590,7 @@
     let livePublishError = "";
     let liveViewerError = "";
     let livePublishTimer = null;
-    let livePublishOperationSerial = 0;
-    let livePublishInFlightId = 0;
-    let livePublishInFlightSourceKey = "";
+    let livePublishInFlight = false;
     let livePublishPending = false;
     let livePendingPublishKind = "state";
     let liveStopping = false;
@@ -2610,9 +2609,6 @@
     let teamContextState = IS_TEAM_MODE ? "loading" : "off";
     let teamContextError = "";
     let teamContextUnsubscribe = null;
-    let teamFreshReadInFlight = false;
-    let teamFreshReadRequested = false;
-    let teamFreshReadTimer = null;
     let teamAuthUnsubscribe = null;
     let teamSession = IS_TEAM_MODE ? loadTeamSession() : null;
     let teamLiveSyncInFlight = false;
@@ -2689,6 +2685,7 @@
       teamAuthPassword: $("teamAuthPassword"),
       teamAuthSignIn: $("teamAuthSignIn"),
       teamReloadButton: $("teamReloadButton"),
+      teamAutoLiveButton: $("teamAutoLiveButton"),
       teamExitButton: $("teamExitButton"),
       teamRuntimeStatus: $("teamRuntimeStatus"),
       teamRuntimeStatusText: $("teamRuntimeStatusText"),
@@ -2811,8 +2808,21 @@
       }
     }
 
-    function emptyTeamSession() {
-      return { version: 1, teamMatchId: TEAM_MATCH_ID, binding: null, pendingRelease: null };
+    function emptyTeamSession({ paused = null } = {}) {
+      const preservePause = paused === null
+        ? !!(teamSession?.teamMatchId === TEAM_MATCH_ID && teamSession?.autoLivePaused)
+        : !!paused;
+      return { version: 1, teamMatchId: TEAM_MATCH_ID, binding: null, pendingRelease: null, autoLivePaused: preservePause };
+    }
+
+    function teamAutoLivePaused() {
+      return !!(IS_TEAM_MODE && teamSession?.teamMatchId === TEAM_MATCH_ID && teamSession?.autoLivePaused);
+    }
+
+    function storeTeamAutoLivePaused(paused) {
+      if (!IS_TEAM_MODE || !TEAM_MATCH_ID) return false;
+      const base = teamSession?.teamMatchId === TEAM_MATCH_ID ? teamSession : emptyTeamSession({ paused: false });
+      return storeTeamSession({ ...base, autoLivePaused: !!paused });
     }
 
     function teamBindingMatchesAssignment(binding, assignment) {
@@ -2911,6 +2921,8 @@
       els.teamContextStatus.dataset.state = teamContextState === "ready" ? "ready" : ((teamContextState === "error" || teamContextState === "conflict") ? "error" : teamContextState);
       els.teamAuthForm.hidden = !teamAuthReady || !!teamAuthUser || !TEAM_MATCH_ID;
       els.teamReloadButton.disabled = teamContextState === "loading" || teamReleaseInFlight || teamBackupInFlight;
+      els.teamAutoLiveButton.textContent = teamAutoLivePaused() ? "Возобновить авто-Live" : "Приостановить авто-Live";
+      els.teamAutoLiveButton.disabled = !!teamSession?.pendingRelease || teamReleaseInFlight || teamBackupInFlight;
       els.teamExitButton.disabled = state.status === "match" || !!teamSession?.pendingRelease || teamReleaseInFlight || teamBackupInFlight;
 
       const locked = true;
@@ -3017,66 +3029,20 @@
       return true;
     }
 
-    async function reloadTeamContext({ allowPendingRebase = false, fresh = false, silent = false } = {}) {
+    async function reloadTeamContext({ allowPendingRebase = false } = {}) {
       if (!IS_TEAM_MODE || !TEAM_MATCH_ID) return;
-      if (!silent) {
-        teamContextState = "loading";
-        teamContextError = "";
-        render();
-      }
+      teamContextState = "loading";
+      teamContextError = "";
+      render();
       try {
         const adapter = await loadTeamAdapter();
-        const assignment = fresh && typeof adapter.readTeamContextFresh === "function"
-          ? await adapter.readTeamContextFresh(TEAM_MATCH_ID)
-          : await adapter.readTeamContext(TEAM_MATCH_ID);
+        const assignment = await adapter.readTeamContext(TEAM_MATCH_ID);
         if (allowPendingRebase && teamSession?.pendingRelease) rebasePendingTeamRelease(assignment);
         handleTeamAssignment(assignment);
       } catch (error) {
         teamContextState = "error";
         teamContextError = error instanceof Error ? error.message : String(error);
         render();
-      }
-    }
-
-    function scheduleTeamContextFreshRead(delay = 150) {
-      if (!IS_TEAM_MODE || !TEAM_MATCH_ID || navigator.onLine === false) return;
-      if (teamFreshReadTimer !== null) clearTimeout(teamFreshReadTimer);
-      teamFreshReadTimer = setTimeout(() => {
-        teamFreshReadTimer = null;
-        void refreshTeamContextFresh();
-      }, delay);
-    }
-
-    async function refreshTeamContextFresh() {
-      if (!IS_TEAM_MODE || !TEAM_MATCH_ID || navigator.onLine === false) return;
-      if (teamFreshReadInFlight) {
-        teamFreshReadRequested = true;
-        return;
-      }
-      teamFreshReadInFlight = true;
-      try {
-        do {
-          teamFreshReadRequested = false;
-          const adapter = await loadTeamAdapter();
-          const assignment = typeof adapter.readTeamContextFresh === "function"
-            ? await adapter.readTeamContextFresh(TEAM_MATCH_ID)
-            : await adapter.readTeamContext(TEAM_MATCH_ID);
-          if (teamFreshReadRequested) continue;
-          handleTeamAssignment(assignment);
-        } while (teamFreshReadRequested && navigator.onLine !== false);
-      } catch (error) {
-        // A recovery read is supplemental to the realtime subscription. Keep a
-        // valid current assignment usable on a transient REST failure and retry
-        // while this Umpire page remains visible.
-        if (!teamAssignment) {
-          teamContextState = "error";
-          teamContextError = error instanceof Error ? error.message : String(error);
-          render();
-        }
-        if (navigator.onLine !== false && document.visibilityState === "visible") scheduleTeamContextFreshRead(2000);
-      } finally {
-        teamFreshReadInFlight = false;
-        if (teamFreshReadRequested && navigator.onLine !== false) scheduleTeamContextFreshRead(0);
       }
     }
 
@@ -3110,17 +3076,11 @@
           render();
         });
         teamContextUnsubscribe?.();
-        teamContextUnsubscribe = await adapter.subscribeTeamContext(TEAM_MATCH_ID, assignment => {
-          if (teamFreshReadInFlight) teamFreshReadRequested = true;
-          handleTeamAssignment(assignment);
-          scheduleTeamContextFreshRead();
-        }, error => {
+        teamContextUnsubscribe = await adapter.subscribeTeamContext(TEAM_MATCH_ID, handleTeamAssignment, error => {
           teamContextState = "error";
           teamContextError = error instanceof Error ? error.message : String(error);
           render();
-          scheduleTeamContextFreshRead(0);
         });
-        await refreshTeamContextFresh();
       } catch (error) {
         teamAuthReady = true;
         teamContextState = "error";
@@ -3336,6 +3296,7 @@
     }
 
     function desiredTeamLiveLinks() {
+      if (IS_TEAM_MODE && teamAutoLivePaused()) return { liveReportUrl: null, liveScoreboardUrl: null };
       if (!livePublication) return { liveReportUrl: null, liveScoreboardUrl: null };
       if (!livePublicationMatchesCurrentMeeting() || livePublishState !== "live") return null;
       return { liveReportUrl: liveReportUrl(), liveScoreboardUrl: liveScoreboardUrl() };
@@ -3396,8 +3357,7 @@
     }
 
     function captureTeamAutoLiveAttempt() {
-      if (!IS_TEAM_MODE || !TEAM_MATCH_ID || state.status !== "match" || !teamAdapter || !teamAuthUser
-          || resetToSetupInFlight || teamBackupInFlight || teamReleaseInFlight || teamSession?.pendingRelease) return null;
+      if (!IS_TEAM_MODE || !TEAM_MATCH_ID || state.status !== "match" || !teamAdapter || !teamAuthUser || teamSession?.pendingRelease) return null;
       const binding = teamSession?.binding;
       if (!binding || !teamBindingMatchesAssignment(binding, teamAssignment)) return null;
       try { teamAdapter.validateTeamBoundState(binding, state); }
@@ -3412,7 +3372,7 @@
     }
 
     function teamAutoLiveAttemptStillCurrent(attempt) {
-      if (!attempt || resetToSetupInFlight || teamBackupInFlight || teamReleaseInFlight) return false;
+      if (!attempt || teamAutoLivePaused()) return false;
       const binding = teamSession?.binding;
       return state.status === "match"
         && attempt.teamMatchId === TEAM_MATCH_ID
@@ -3435,7 +3395,7 @@
     }
 
     function scheduleTeamAutoLiveRetry(reason = "retry") {
-      if (!IS_TEAM_MODE || !navigator.onLine || teamAutoLiveRetryTimer) return;
+      if (!IS_TEAM_MODE || teamAutoLivePaused() || !navigator.onLine || teamAutoLiveRetryTimer) return;
       if (!captureTeamAutoLiveAttempt()) return;
       teamAutoLiveRetryTimer = window.setTimeout(() => {
         teamAutoLiveRetryTimer = null;
@@ -3451,6 +3411,12 @@
     async function ensureTeamAutoLiveOnce(reason = "event") {
       const attempt = captureTeamAutoLiveAttempt();
       if (!attempt) return;
+      if (teamAutoLivePaused()) {
+        cancelTeamAutoLiveRetry();
+        setLivePublishState("paused", "Live намеренно приостановлен для этой командной встречи");
+        requestTeamLiveSync();
+        return;
+      }
       if (livePublication && !livePublicationMatchesCurrentMeeting()) {
         setLivePublishState("error", "Сохранена live-публикация другой личной встречи. Автоматический запуск заблокирован до безопасного завершения прежней публикации.");
         return;
@@ -3518,6 +3484,35 @@
       teamAutoLiveEnsureReason = reason;
       teamAutoLiveEnsureQueued = true;
       queueMicrotask(() => { void runTeamAutoLiveEnsure(); });
+    }
+
+    async function pauseTeamAutoLive() {
+      closeModal();
+      if (!IS_TEAM_MODE || !TEAM_MATCH_ID) return;
+      if (!storeTeamAutoLivePaused(true)) {
+        showCopyableLiveError("Live не приостановлен", teamContextError || "Не удалось надёжно сохранить состояние паузы.");
+        return;
+      }
+      cancelTeamAutoLiveRetry();
+      livePublishPending = false;
+      if (livePublishTimer) window.clearTimeout(livePublishTimer);
+      livePublishTimer = null;
+      releaseLivePublisherLease();
+      setLivePublishState("paused", "Live намеренно приостановлен для этой командной встречи");
+      requestTeamLiveSync();
+      render();
+    }
+
+    async function resumeTeamAutoLive() {
+      closeModal();
+      if (!IS_TEAM_MODE || !TEAM_MATCH_ID) return;
+      if (!storeTeamAutoLivePaused(false)) {
+        showCopyableLiveError("Live не возобновлён", teamContextError || "Не удалось надёжно сохранить снятие паузы.");
+        return;
+      }
+      setLivePublishState(state.status === "match" ? "starting" : "off", state.status === "match" ? "Возобновление автоматического Live…" : "");
+      render();
+      if (state.status === "match") requestTeamAutoLiveEnsure("explicit-resume");
     }
 
     function createLiveTabId() {
@@ -3678,11 +3673,6 @@
       else localStorage.removeItem(LIVE_PUBLICATION_KEY);
     }
 
-    function livePublicationSourceKey(publication = livePublication) {
-      if (!publication?.publisherUid || !publication?.reportId) return "";
-      return `${publication.publisherUid}/${publication.reportId}`;
-    }
-
     function livePublicationMatchesCurrentMeeting() {
       return !!livePublication
         && state.status === "match"
@@ -3719,7 +3709,7 @@
       const pageUrl = new URL(location.href);
       pageUrl.hash = "";
       return [
-        "ttScore 0.9.6 — first-server-normalization 1",
+        "ttScore 0.9.0 — first-server-normalization 1",
         `Роль: ${role}`,
         `Ошибка: ${message || "Неизвестная ошибка"}`,
         `Время: ${new Date().toISOString()}`,
@@ -3759,8 +3749,8 @@
 
     function renderLivePublishStatus(message = "") {
       if (!els.livePublishStatus) return;
-      const renderedState = livePublishState;
-      const visible = state.status === "match" && (livePublicationMatchesCurrentMeeting() || livePublishState !== "off");
+      const renderedState = IS_TEAM_MODE && teamAutoLivePaused() ? "paused" : livePublishState;
+      const visible = state.status === "match" && (teamAutoLivePaused() || livePublicationMatchesCurrentMeeting() || livePublishState !== "off");
       els.livePublishStatus.hidden = !visible;
       els.livePublishStatus.dataset.state = renderedState;
       const labels = {
@@ -3769,9 +3759,10 @@
         live: "Live-отчёт обновляется в реальном времени",
         offline: "Нет связи с Firebase; локальный счёт продолжает работать",
         stopping: "Остановка live-публикации…",
+        paused: "Live намеренно приостановлен для этой командной встречи",
         error: "Ошибка live-публикации"
       };
-      els.livePublishStatusText.textContent = message || labels[renderedState] || labels.off;
+      els.livePublishStatusText.textContent = renderedState === "paused" ? labels.paused : (message || labels[renderedState] || labels.off);
       els.copyLivePublishErrorButton.hidden = renderedState !== "error" && renderedState !== "offline";
     }
 
@@ -3863,6 +3854,7 @@
 
     function scheduleLivePublish(kind = "state", { immediate = false } = {}) {
       if (IS_REPORT_PAGE || liveStopping || !livePublicationMatchesCurrentMeeting()) return Promise.resolve();
+      if (IS_TEAM_MODE && teamAutoLivePaused()) return Promise.resolve();
       livePendingPublishKind = mergeLivePublishKind(
         mergeLivePublishKind(livePendingPublishKind, livePublication.pendingCheckpointKind || "state"),
         kind
@@ -3894,15 +3886,16 @@
     }
 
     async function publishLiveUpdate() {
-      if (liveStopping || !livePublicationMatchesCurrentMeeting()) return;
-      const publicationAtStart = livePublication;
-      const sourceKey = livePublicationSourceKey(publicationAtStart);
-      if (!sourceKey || livePublishInFlightSourceKey === sourceKey) return;
+      if (liveStopping || !livePublicationMatchesCurrentMeeting() || livePublishInFlight) return;
+      if (IS_TEAM_MODE && teamAutoLivePaused()) {
+        setLivePublishState("paused", "Live намеренно приостановлен для этой командной встречи");
+        return;
+      }
       if (!claimLivePublisherLease()) {
         setLivePublishState("error", "Live-публикация уже выполняется в другой вкладке.");
         return;
       }
-      if (Date.now() >= publicationAtStart.expiresAt) {
+      if (Date.now() >= livePublication.expiresAt) {
         if (IS_TEAM_MODE) {
           setLivePublishState("starting", "Срок Live-источника истёк; подготовка автоматической замены…");
           requestTeamAutoLiveEnsure("ttl-expired");
@@ -3911,47 +3904,36 @@
         }
         return;
       }
-      const operationId = ++livePublishOperationSerial;
-      livePublishInFlightId = operationId;
-      livePublishInFlightSourceKey = sourceKey;
+      livePublishInFlight = true;
       livePublishPending = false;
-      const publishKind = mergeLivePublishKind(livePendingPublishKind, publicationAtStart.pendingCheckpointKind || "state");
+      const publishKind = mergeLivePublishKind(livePendingPublishKind, livePublication.pendingCheckpointKind || "state");
       livePendingPublishKind = "state";
-      const stateRevision = Math.max(
-        1,
-        Number(publicationAtStart.desiredStateRevision || 0),
-        Number(publicationAtStart.lastPublishedStateRevision || 0) + 1
-      );
-      const createsCheckpoint = publishKind !== "state";
-      const checkpointRevision = createsCheckpoint
-        ? stateRevision
-        : Number(publicationAtStart.lastCheckpointRevision || 0);
-      const compactStateAtStart = buildCompactLiveState();
-      const checkpointDataAtStart = createsCheckpoint ? buildCanonicalMatchData() : null;
-      const operationStillCurrent = () => (
-        livePublishInFlightId === operationId
-        && livePublicationSourceKey(livePublication) === sourceKey
-        && !liveStopping
-      );
       try {
         const firebase = await ensureLiveAuthor();
-        if (!operationStillCurrent()) return;
-        if (firebase.user.uid !== publicationAtStart.publisherUid) {
+        if (firebase.user.uid !== livePublication.publisherUid) {
           throw new Error("Анонимная учётная запись автора изменилась; прежнюю публикацию нельзя обновить.");
         }
-        const keyBytes = decodeProtectedReportKey(publicationAtStart.keyText);
+        const keyBytes = decodeProtectedReportKey(livePublication.keyText);
+        const stateRevision = Math.max(
+          1,
+          Number(livePublication.desiredStateRevision || 0),
+          Number(livePublication.lastPublishedStateRevision || 0) + 1
+        );
+        const createsCheckpoint = publishKind !== "state";
+        const checkpointRevision = createsCheckpoint
+          ? stateRevision
+          : Number(livePublication.lastCheckpointRevision || 0);
         const encryptedPayload = await encryptLiveJson(
-          compactStateAtStart,
+          buildCompactLiveState(),
           keyBytes,
-          publicationAtStart.reportId,
+          livePublication.reportId,
           "state",
           stateRevision,
           LIVE_STATE_MAX_JSON_BYTES
         );
-        if (!operationStillCurrent()) return;
         const reportRef = firebase.databaseModule.ref(
           firebase.database,
-          `${LIVE_ROOT_PATH}/${publicationAtStart.publisherUid}/${publicationAtStart.reportId}`
+          `${LIVE_ROOT_PATH}/${livePublication.publisherUid}/${livePublication.reportId}`
         );
         const stateEnvelope = {
           envelopeVersion: LIVE_ENVELOPE_VERSION,
@@ -3959,40 +3941,38 @@
           revision: stateRevision,
           checkpointRevision,
           updatedAt: firebase.databaseModule.serverTimestamp(),
-          expiresAt: publicationAtStart.expiresAt,
+          expiresAt: livePublication.expiresAt,
           reason: publishKind,
           encryptedPayload
         };
         let checkpointEnvelope = null;
         if (createsCheckpoint) {
           const checkpointPayload = await encryptLiveJson(
-            checkpointDataAtStart,
+            buildCanonicalMatchData(),
             keyBytes,
-            publicationAtStart.reportId,
+            livePublication.reportId,
             "checkpoint",
             checkpointRevision,
             MAX_CANONICAL_JSON_BYTES
           );
-          if (!operationStillCurrent()) return;
           checkpointEnvelope = {
             envelopeVersion: LIVE_ENVELOPE_VERSION,
             schemaVersion: 1,
             revision: checkpointRevision,
             sourceStateRevision: stateRevision,
             updatedAt: firebase.databaseModule.serverTimestamp(),
-            expiresAt: publicationAtStart.expiresAt,
+            expiresAt: livePublication.expiresAt,
             reason: publishKind,
             encryptedPayload: checkpointPayload
           };
         }
-        if (!operationStillCurrent()) return;
-        const initialPublication = Number(publicationAtStart.lastPublishedStateRevision || 0) === 0;
+        const initialPublication = Number(livePublication.lastPublishedStateRevision || 0) === 0;
         if (initialPublication) {
           await firebase.databaseModule.set(reportRef, {
             meta: {
               envelopeVersion: LIVE_ENVELOPE_VERSION,
               schemaVersion: LIVE_STATE_SCHEMA_VERSION,
-              expiresAt: publicationAtStart.expiresAt
+              expiresAt: livePublication.expiresAt
             },
             state: stateEnvelope,
             ...(checkpointEnvelope ? { checkpoint: checkpointEnvelope } : {})
@@ -4005,14 +3985,9 @@
         } else {
           const stateRef = firebase.databaseModule.ref(
             firebase.database,
-            `${LIVE_ROOT_PATH}/${publicationAtStart.publisherUid}/${publicationAtStart.reportId}/state`
+            `${LIVE_ROOT_PATH}/${livePublication.publisherUid}/${livePublication.reportId}/state`
           );
           await firebase.databaseModule.set(stateRef, stateEnvelope);
-        }
-        if (!operationStillCurrent()) {
-          queueLiveCleanup(publicationAtStart);
-          void cleanupQueuedLivePublications();
-          return;
         }
         storeLivePublication({
           ...livePublication,
@@ -4027,29 +4002,26 @@
             : Number(livePublication.pendingCheckpointRevision || 0),
           lastPublishedAt: Date.now()
         });
-        setLivePublishState("live");
-        requestTeamLiveSync();
-      } catch (error) {
-        if (livePublicationSourceKey(livePublication) !== sourceKey || livePublishInFlightId !== operationId || liveStopping) {
-          queueLiveCleanup(publicationAtStart);
-          void cleanupQueuedLivePublications();
-          return;
+        if (IS_TEAM_MODE && teamAutoLivePaused()) {
+          setLivePublishState("paused", "Live намеренно приостановлен для этой командной встречи");
+          requestTeamLiveSync();
+        } else {
+          setLivePublishState("live");
+          requestTeamLiveSync();
         }
+      } catch (error) {
         livePendingPublishKind = mergeLivePublishKind(livePendingPublishKind, publishKind);
         const offline = !navigator.onLine || /network|offline/i.test(error?.message || "");
         setLivePublishState(offline ? "offline" : "error", error?.message || "Не удалось обновить live-отчёт.");
-        if (IS_TEAM_MODE && liveErrorIsRetryable(error)) scheduleTeamAutoLiveRetry("publish-error");
+        if (IS_TEAM_MODE && !teamAutoLivePaused() && liveErrorIsRetryable(error)) scheduleTeamAutoLiveRetry("publish-error");
       } finally {
-        if (livePublishInFlightId === operationId) {
-          livePublishInFlightId = 0;
-          livePublishInFlightSourceKey = "";
-          if (livePublishPending && !liveStopping) {
-            if (livePublishTimer) window.clearTimeout(livePublishTimer);
-            livePublishTimer = window.setTimeout(() => {
-              livePublishTimer = null;
-              void publishLiveUpdate();
-            }, LIVE_PUBLISH_DEBOUNCE_MS);
-          }
+        livePublishInFlight = false;
+        if (livePublishPending && !liveStopping && !(IS_TEAM_MODE && teamAutoLivePaused())) {
+          if (livePublishTimer) window.clearTimeout(livePublishTimer);
+          livePublishTimer = window.setTimeout(() => {
+            livePublishTimer = null;
+            void publishLiveUpdate();
+          }, LIVE_PUBLISH_DEBOUNCE_MS);
         }
       }
     }
@@ -4057,6 +4029,10 @@
     async function createLivePublication({ showShare = true, expectedTeamAttempt = null } = {}) {
       if (state.status !== "match") return false;
       if (expectedTeamAttempt && !teamAutoLiveAttemptStillCurrent(expectedTeamAttempt)) return false;
+      if (IS_TEAM_MODE && teamAutoLivePaused()) {
+        setLivePublishState("paused", "Live намеренно приостановлен для этой командной встречи");
+        return false;
+      }
       if (livePublication && !livePublicationMatchesCurrentMeeting()) {
         const message = "Сначала удалите прежнюю live-публикацию из меню.";
         setLivePublishState("error", message);
@@ -4120,7 +4096,7 @@
       } catch (error) {
         setLivePublishState("error", error?.message || "Не удалось включить live-публикацию.");
         if (showShare) showCopyableLiveError("Не удалось включить live-публикацию", livePublishError);
-        if (IS_TEAM_MODE && liveErrorIsRetryable(error)) scheduleTeamAutoLiveRetry("start-error");
+        if (IS_TEAM_MODE && !teamAutoLivePaused() && liveErrorIsRetryable(error)) scheduleTeamAutoLiveRetry("start-error");
         return false;
       }
     }
@@ -4130,49 +4106,28 @@
       await createLivePublication({ showShare: true });
     }
 
-    async function stopLivePublication({ silent = false, allowDeferredCleanup = false } = {}) {
+    async function stopLivePublication({ silent = false } = {}) {
       if (!livePublication) return true;
       if (!silent) closeModal();
-      const publicationToStop = livePublication;
-      const sourceKey = livePublicationSourceKey(publicationToStop);
-      let ownershipConfirmed = false;
       liveStopping = true;
       livePublishPending = false;
       if (livePublishTimer) window.clearTimeout(livePublishTimer);
       livePublishTimer = null;
       setLivePublishState("stopping");
       try {
-        if (allowDeferredCleanup && livePublishInFlightSourceKey === sourceKey) {
-          const firebase = await ensureLiveAuthor();
-          if (firebase.user.uid !== publicationToStop.publisherUid) {
-            throw new Error("Удалить публикацию может только исходная анонимная учётная запись автора.");
-          }
-          ownershipConfirmed = true;
-          if (livePublishInFlightSourceKey === sourceKey) {
-            queueLiveCleanup(publicationToStop);
-            storeLivePublication(null);
-            releaseLivePublisherLease();
-            liveStopping = false;
-            setLivePublishState("off");
-            requestTeamLiveSync();
-            render();
-            return true;
-          }
-        }
-        while (livePublishInFlightSourceKey === sourceKey) {
+        while (livePublishInFlight) {
           await new Promise(resolve => window.setTimeout(resolve, 50));
         }
         const firebase = await ensureLiveAuthor();
-        if (firebase.user.uid !== publicationToStop.publisherUid) {
+        if (firebase.user.uid !== livePublication.publisherUid) {
           throw new Error("Удалить публикацию может только исходная анонимная учётная запись автора.");
         }
-        ownershipConfirmed = true;
         const reportRef = firebase.databaseModule.ref(
           firebase.database,
-          `${LIVE_ROOT_PATH}/${publicationToStop.publisherUid}/${publicationToStop.reportId}`
+          `${LIVE_ROOT_PATH}/${livePublication.publisherUid}/${livePublication.reportId}`
         );
         await firebase.databaseModule.remove(reportRef);
-        if (livePublicationSourceKey(livePublication) === sourceKey) storeLivePublication(null);
+        storeLivePublication(null);
         releaseLivePublisherLease();
         liveStopping = false;
         setLivePublishState("off");
@@ -4181,17 +4136,6 @@
         if (!silent) alert("Live-публикация остановлена, данные удалены из Firebase.");
         return true;
       } catch (error) {
-        if (allowDeferredCleanup && ownershipConfirmed && livePublicationSourceKey(livePublication) === sourceKey) {
-          queueLiveCleanup(publicationToStop);
-          storeLivePublication(null);
-          releaseLivePublisherLease();
-          liveStopping = false;
-          setLivePublishState("off");
-          requestTeamLiveSync();
-          render();
-          console.warn("Удаление завершённой live-публикации отложено; локальный publisher завершён.", error);
-          return true;
-        }
         liveStopping = false;
         setLivePublishState("error", error?.message || "Не удалось остановить live-публикацию.");
         if (!silent) showCopyableLiveError("Не удалось остановить live-публикацию", livePublishError);
@@ -4249,6 +4193,11 @@
 
     async function resumeLivePublication() {
       if (!livePublicationMatchesCurrentMeeting()) return;
+      if (IS_TEAM_MODE && teamAutoLivePaused()) {
+        setLivePublishState("paused", "Live намеренно приостановлен для этой командной встречи");
+        requestTeamLiveSync();
+        return;
+      }
       if (!claimLivePublisherLease()) {
         setLivePublishState("error", "Live-публикация уже выполняется в другой вкладке.");
         return;
@@ -5582,9 +5531,9 @@
       resetToSetupInFlight = true;
       try {
         if (livePublicationMatchesCurrentMeeting()) {
-          const stopped = await stopLivePublication({ silent: true, allowDeferredCleanup: true });
+          const stopped = await stopLivePublication({ silent: true });
           if (!stopped) {
-            showCopyableLiveError("Новая встреча не начата", "Сначала восстановите исходную учётную запись автора live-публикации.");
+            showCopyableLiveError("Новая встреча не начата", "Сначала устраните ошибку остановки live-публикации.");
             return;
           }
         }
@@ -5713,7 +5662,7 @@
       if (IS_TEAM_MODE) {
         try {
           const binding = teamAdapter.bindTeamAssignment(teamAssignment, state);
-          if (!storeTeamSession({ version: 1, teamMatchId: TEAM_MATCH_ID, binding, pendingRelease: null })) {
+          if (!storeTeamSession({ version: 1, teamMatchId: TEAM_MATCH_ID, binding, pendingRelease: null, autoLivePaused: teamAutoLivePaused() })) {
             throw new Error(teamContextError || "Не удалось сохранить Team binding.");
           }
           teamContextState = "ready";
@@ -6193,6 +6142,10 @@
         : [];
       const liveActions = IS_TEAM_MODE
         ? [
+            makeButton(teamAutoLivePaused() ? "Возобновить Live" : "Приостановить Live", teamAutoLivePaused() ? "primary" : "secondary", () => {
+              if (teamAutoLivePaused()) void resumeTeamAutoLive();
+              else void pauseTeamAutoLive();
+            }),
             ...(livePublicationMatchesCurrentMeeting() && livePublishState === "live"
               ? [makeButton("Скопировать прямые live-ссылки", "secondary", showLiveShareModal)]
               : []),
@@ -6963,7 +6916,7 @@
         },
         createdBy: {
           application: "ttScore",
-          version: "0.9.6"
+          version: "0.9.0"
         },
         match: {
           date: state.matchDate,
@@ -7710,7 +7663,7 @@
       appLinkLine.append(appLink);
       const version = document.createElement("p");
       version.className = "app-version";
-      version.textContent = "Версия 0.9.6";
+      version.textContent = "Версия 0.9.0";
       footer.append(dataEnteredLine, appLinkLine, version);
       screen.append(footer);
       root.append(screen);
@@ -8671,6 +8624,10 @@ ${buildStandaloneReportRoot().outerHTML}
     els.startButton.addEventListener("click", startMatch);
     els.teamAuthForm.addEventListener("submit", handleTeamSignIn);
     els.teamReloadButton.addEventListener("click", () => { void reloadTeamContext({ allowPendingRebase: true }); });
+    els.teamAutoLiveButton.addEventListener("click", () => {
+      if (teamAutoLivePaused()) void resumeTeamAutoLive();
+      else void pauseTeamAutoLive();
+    });
     els.teamExitButton.addEventListener("click", exitTeamMode);
     els.zoneA.addEventListener("click", () => addPoint("A"));
     els.zoneB.addEventListener("click", () => addPoint("B"));
@@ -8718,8 +8675,6 @@ ${buildStandaloneReportRoot().outerHTML}
       if (PAGE_CAPABILITIES.writesLiveState) releaseLivePublisherLease();
       cancelTeamAutoLiveRetry();
       cancelTeamLiveSyncRetry();
-      if (teamFreshReadTimer !== null) clearTimeout(teamFreshReadTimer);
-      teamFreshReadTimer = null;
     });
 
     window.addEventListener("beforeunload", () => {
@@ -8736,7 +8691,7 @@ ${buildStandaloneReportRoot().outerHTML}
       if (IS_TEAM_MODE) {
         void attemptPendingTeamRelease();
         requestTeamLiveSync();
-        void refreshTeamContextFresh();
+        void reloadTeamContext();
       }
     });
 
@@ -8750,19 +8705,8 @@ ${buildStandaloneReportRoot().outerHTML}
       if (PAGE_CAPABILITIES.writesLocalMeeting && document.visibilityState === "hidden" && state.status === "match") saveState();
       if (PAGE_CAPABILITIES.writesLocalMeeting && document.visibilityState === "visible" && state.status === "match") {
         requestWakeLock();
-        if (IS_TEAM_MODE) {
-          requestTeamAutoLiveEnsure("visible");
-          scheduleTeamContextFreshRead(0);
-        }
+        if (IS_TEAM_MODE) requestTeamAutoLiveEnsure("visible");
       }
-    });
-
-    window.addEventListener("focus", () => {
-      if (IS_TEAM_MODE) scheduleTeamContextFreshRead(0);
-    });
-
-    window.addEventListener("pageshow", () => {
-      if (IS_TEAM_MODE) scheduleTeamContextFreshRead(0);
     });
 
     window.addEventListener("storage", event => {

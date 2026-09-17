@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#0b1020" />
   <meta name="ttscore-build" content="compact-live-scoreboard-2" />
-  <title>ttScore 0.9.6</title>
+  <title>ttScore 0.9.5</title>
   <style>
     :root {
       --bg: #0b1020;
@@ -2135,7 +2135,7 @@
         <button class="primary" id="startButton" type="button">Начать встречу из 5 партий</button>
         <button class="secondary" id="openJsonButton" type="button">Посмотреть сохранённый отчёт</button>
         <p class="tiny">В Team mode Live запускается автоматически после начала привязанной встречи. В автономном режиме Live включается вручную из меню встречи.</p>
-        <p class="app-version">Версия 0.9.6</p>
+        <p class="app-version">Версия 0.9.5</p>
       </div>
     </section>
 
@@ -2315,7 +2315,7 @@
       <footer class="stat-report-footer" id="statReportFooter">
         <p id="statDataEnteredLine" hidden>Данные введены: <time id="statDataEnteredAt"></time></p>
         <p id="statAppLinkLine" hidden><a href="https://t39s.github.io/ttscore/" target="_blank" rel="noopener noreferrer">https://t39s.github.io/ttscore/</a></p>
-        <p class="app-version">Версия 0.9.6</p>
+        <p class="app-version">Версия 0.9.5</p>
       </footer>
     </section>
 
@@ -2346,7 +2346,7 @@
         <div class="live-scoreboard-server-indicator live-scoreboard-server-right" id="liveScoreboardRightPlayer" aria-label="Подающий справа"></div>
       </div>
       <p class="visually-hidden" id="liveScoreboardServer" hidden></p>
-      <p class="live-scoreboard-footer">Версия 0.9.6</p>
+      <p class="live-scoreboard-footer">Версия 0.9.5</p>
     </section>
   </main>
 
@@ -2436,7 +2436,7 @@
     // Team integration protocol namespace is intentionally preserved from accepted 0.4.0
     // so an in-flight binding/pending release survives an application upgrade.
     const TEAM_SESSION_KEY = "ttScore:0.4.0:teamIntegration:v1";
-    const TEAM_ADAPTER_MODULE_URL = new URL("./team/assets/0.12.1/ttscore-team-adapter.mjs", location.href).toString();
+    const TEAM_ADAPTER_MODULE_URL = new URL("./team/assets/0.11.9/ttscore-team-adapter.mjs", location.href).toString();
     const requestedTeamMatchId = pageParams.get("teamMatch");
     const TEAM_MODE_REQUESTED = PAGE_MODE === "score" && requestedTeamMatchId !== null;
     const TEAM_MATCH_ID = TEAM_MODE_REQUESTED && TEAM_MATCH_ID_PATTERN.test(requestedTeamMatchId || "") ? requestedTeamMatchId : "";
@@ -2610,9 +2610,6 @@
     let teamContextState = IS_TEAM_MODE ? "loading" : "off";
     let teamContextError = "";
     let teamContextUnsubscribe = null;
-    let teamFreshReadInFlight = false;
-    let teamFreshReadRequested = false;
-    let teamFreshReadTimer = null;
     let teamAuthUnsubscribe = null;
     let teamSession = IS_TEAM_MODE ? loadTeamSession() : null;
     let teamLiveSyncInFlight = false;
@@ -3017,66 +3014,20 @@
       return true;
     }
 
-    async function reloadTeamContext({ allowPendingRebase = false, fresh = false, silent = false } = {}) {
+    async function reloadTeamContext({ allowPendingRebase = false } = {}) {
       if (!IS_TEAM_MODE || !TEAM_MATCH_ID) return;
-      if (!silent) {
-        teamContextState = "loading";
-        teamContextError = "";
-        render();
-      }
+      teamContextState = "loading";
+      teamContextError = "";
+      render();
       try {
         const adapter = await loadTeamAdapter();
-        const assignment = fresh && typeof adapter.readTeamContextFresh === "function"
-          ? await adapter.readTeamContextFresh(TEAM_MATCH_ID)
-          : await adapter.readTeamContext(TEAM_MATCH_ID);
+        const assignment = await adapter.readTeamContext(TEAM_MATCH_ID);
         if (allowPendingRebase && teamSession?.pendingRelease) rebasePendingTeamRelease(assignment);
         handleTeamAssignment(assignment);
       } catch (error) {
         teamContextState = "error";
         teamContextError = error instanceof Error ? error.message : String(error);
         render();
-      }
-    }
-
-    function scheduleTeamContextFreshRead(delay = 150) {
-      if (!IS_TEAM_MODE || !TEAM_MATCH_ID || navigator.onLine === false) return;
-      if (teamFreshReadTimer !== null) clearTimeout(teamFreshReadTimer);
-      teamFreshReadTimer = setTimeout(() => {
-        teamFreshReadTimer = null;
-        void refreshTeamContextFresh();
-      }, delay);
-    }
-
-    async function refreshTeamContextFresh() {
-      if (!IS_TEAM_MODE || !TEAM_MATCH_ID || navigator.onLine === false) return;
-      if (teamFreshReadInFlight) {
-        teamFreshReadRequested = true;
-        return;
-      }
-      teamFreshReadInFlight = true;
-      try {
-        do {
-          teamFreshReadRequested = false;
-          const adapter = await loadTeamAdapter();
-          const assignment = typeof adapter.readTeamContextFresh === "function"
-            ? await adapter.readTeamContextFresh(TEAM_MATCH_ID)
-            : await adapter.readTeamContext(TEAM_MATCH_ID);
-          if (teamFreshReadRequested) continue;
-          handleTeamAssignment(assignment);
-        } while (teamFreshReadRequested && navigator.onLine !== false);
-      } catch (error) {
-        // A recovery read is supplemental to the realtime subscription. Keep a
-        // valid current assignment usable on a transient REST failure and retry
-        // while this Umpire page remains visible.
-        if (!teamAssignment) {
-          teamContextState = "error";
-          teamContextError = error instanceof Error ? error.message : String(error);
-          render();
-        }
-        if (navigator.onLine !== false && document.visibilityState === "visible") scheduleTeamContextFreshRead(2000);
-      } finally {
-        teamFreshReadInFlight = false;
-        if (teamFreshReadRequested && navigator.onLine !== false) scheduleTeamContextFreshRead(0);
       }
     }
 
@@ -3110,17 +3061,11 @@
           render();
         });
         teamContextUnsubscribe?.();
-        teamContextUnsubscribe = await adapter.subscribeTeamContext(TEAM_MATCH_ID, assignment => {
-          if (teamFreshReadInFlight) teamFreshReadRequested = true;
-          handleTeamAssignment(assignment);
-          scheduleTeamContextFreshRead();
-        }, error => {
+        teamContextUnsubscribe = await adapter.subscribeTeamContext(TEAM_MATCH_ID, handleTeamAssignment, error => {
           teamContextState = "error";
           teamContextError = error instanceof Error ? error.message : String(error);
           render();
-          scheduleTeamContextFreshRead(0);
         });
-        await refreshTeamContextFresh();
       } catch (error) {
         teamAuthReady = true;
         teamContextState = "error";
@@ -3719,7 +3664,7 @@
       const pageUrl = new URL(location.href);
       pageUrl.hash = "";
       return [
-        "ttScore 0.9.6 — first-server-normalization 1",
+        "ttScore 0.9.5 — first-server-normalization 1",
         `Роль: ${role}`,
         `Ошибка: ${message || "Неизвестная ошибка"}`,
         `Время: ${new Date().toISOString()}`,
@@ -6963,7 +6908,7 @@
         },
         createdBy: {
           application: "ttScore",
-          version: "0.9.6"
+          version: "0.9.5"
         },
         match: {
           date: state.matchDate,
@@ -7710,7 +7655,7 @@
       appLinkLine.append(appLink);
       const version = document.createElement("p");
       version.className = "app-version";
-      version.textContent = "Версия 0.9.6";
+      version.textContent = "Версия 0.9.5";
       footer.append(dataEnteredLine, appLinkLine, version);
       screen.append(footer);
       root.append(screen);
@@ -8718,8 +8663,6 @@ ${buildStandaloneReportRoot().outerHTML}
       if (PAGE_CAPABILITIES.writesLiveState) releaseLivePublisherLease();
       cancelTeamAutoLiveRetry();
       cancelTeamLiveSyncRetry();
-      if (teamFreshReadTimer !== null) clearTimeout(teamFreshReadTimer);
-      teamFreshReadTimer = null;
     });
 
     window.addEventListener("beforeunload", () => {
@@ -8736,7 +8679,7 @@ ${buildStandaloneReportRoot().outerHTML}
       if (IS_TEAM_MODE) {
         void attemptPendingTeamRelease();
         requestTeamLiveSync();
-        void refreshTeamContextFresh();
+        void reloadTeamContext();
       }
     });
 
@@ -8750,19 +8693,8 @@ ${buildStandaloneReportRoot().outerHTML}
       if (PAGE_CAPABILITIES.writesLocalMeeting && document.visibilityState === "hidden" && state.status === "match") saveState();
       if (PAGE_CAPABILITIES.writesLocalMeeting && document.visibilityState === "visible" && state.status === "match") {
         requestWakeLock();
-        if (IS_TEAM_MODE) {
-          requestTeamAutoLiveEnsure("visible");
-          scheduleTeamContextFreshRead(0);
-        }
+        if (IS_TEAM_MODE) requestTeamAutoLiveEnsure("visible");
       }
-    });
-
-    window.addEventListener("focus", () => {
-      if (IS_TEAM_MODE) scheduleTeamContextFreshRead(0);
-    });
-
-    window.addEventListener("pageshow", () => {
-      if (IS_TEAM_MODE) scheduleTeamContextFreshRead(0);
     });
 
     window.addEventListener("storage", event => {
