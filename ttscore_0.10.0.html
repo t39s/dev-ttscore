@@ -2376,6 +2376,7 @@
     const LIVE_CLEANUP_QUEUE_KEY = "ttScore:0.3.5:cleanupQueue";
     const LIVE_REPORT_TTL_MS = 23 * 60 * 60 * 1000;
     const LIVE_PUBLISH_DEBOUNCE_MS = 160;
+    const LIVE_WRITE_TIMEOUT_MS = 8_000;
     const LIVE_PUBLISHER_LEASE_MS = 15_000;
     const LIVE_PUBLISHER_LEASE_RENEW_MS = 5_000;
     const TEAM_AUTO_LIVE_RETRY_MS = 3_000;
@@ -3534,7 +3535,21 @@
 
     function liveErrorIsRetryable(error) {
       const message = error instanceof Error ? error.message : String(error || "");
-      return !navigator.onLine || /network|offline|timeout|unavailable|disconnected|connection/iu.test(message);
+      return !navigator.onLine || /network|offline|timeout|тайм[- ]?аут|unavailable|disconnected|connection/iu.test(message);
+    }
+
+    async function awaitLiveFirebaseWrite(promise) {
+      let timer = null;
+      try {
+        return await Promise.race([
+          promise,
+          new Promise((_, reject) => {
+            timer = window.setTimeout(() => reject(new Error("Тайм-аут записи Firebase Live.")), LIVE_WRITE_TIMEOUT_MS);
+          })
+        ]);
+      } finally {
+        if (timer !== null) window.clearTimeout(timer);
+      }
     }
 
     async function ensureTeamAutoLiveOnce(reason = "event") {
@@ -4134,7 +4149,7 @@
         if (!operationStillCurrent()) return;
         const initialPublication = Number(publicationAtStart.lastPublishedStateRevision || 0) === 0;
         if (initialPublication) {
-          await firebase.databaseModule.set(reportRef, {
+          await awaitLiveFirebaseWrite(firebase.databaseModule.set(reportRef, {
             meta: {
               envelopeVersion: LIVE_ENVELOPE_VERSION,
               schemaVersion: LIVE_STATE_ENVELOPE_SCHEMA_VERSION,
@@ -4142,18 +4157,18 @@
             },
             state: stateEnvelope,
             ...(checkpointEnvelope ? { checkpoint: checkpointEnvelope } : {})
-          });
+          }));
         } else if (createsCheckpoint) {
-          await firebase.databaseModule.update(reportRef, {
+          await awaitLiveFirebaseWrite(firebase.databaseModule.update(reportRef, {
             state: stateEnvelope,
             checkpoint: checkpointEnvelope
-          });
+          }));
         } else {
           const stateRef = firebase.databaseModule.ref(
             firebase.database,
             `${LIVE_ROOT_PATH}/${publicationAtStart.publisherUid}/${publicationAtStart.reportId}/state`
           );
-          await firebase.databaseModule.set(stateRef, stateEnvelope);
+          await awaitLiveFirebaseWrite(firebase.databaseModule.set(stateRef, stateEnvelope));
         }
         if (!operationStillCurrent()) {
           queueLiveCleanup(publicationAtStart);

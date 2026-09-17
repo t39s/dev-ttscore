@@ -18,7 +18,8 @@ Current runtime closure:
 - only the current 0.13.0 Team runtime closure is packaged;
 - Firebase Team root schema remains version 4 and Firebase security rules are unchanged.
 
-RC3 → RC4 runtime change introduced the bounded committed-snapshot orchestration boundary and one Team contract correction for phase-only projection. RC4 → RC5 is further bounded to the byte-identical ttScore entrypoints: initial Live creation reselects the latest durable committed snapshot after asynchronous Auth/report-id setup. Team runtime and Firebase schema/rules are unchanged in RC5.
+RC3 → RC4 runtime change introduced the bounded committed-snapshot orchestration boundary and one Team contract correction for phase-only projection. RC4 → RC5 is further bounded to the byte-identical ttScore entrypoints: initial Live creation reselects the latest durable committed snapshot after asynchronous Auth/report-id setup. Team runtime and Firebase schema/rules are unchanged in RC5. RC5 → RC6 is also bounded to the byte-identical ttScore entrypoints plus one regression test: Live envelope/meta schema is restored to deployed Rules-compatible schema 1 while encrypted phase payload stays schema 2. Team runtime, `ttscore-live` backend and Firebase Rules are unchanged.
+RC6 → RC7 changes the byte-identical ttScore entrypoints plus `team/assets/0.13.0/ttscore-integration.mjs` and `app.mjs`: Team exposes Live links only after the first confirmed Firebase revision, and native Live writes are time-bounded/retryable. Firebase Team rules and `ttscore-live` Rules remain unchanged.
 
 Changed Team 0.13.0 modules relative to accepted 0.12.1:
 
