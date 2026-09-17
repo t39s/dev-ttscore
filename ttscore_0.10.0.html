@@ -2381,8 +2381,9 @@
     const TEAM_AUTO_LIVE_RETRY_MS = 3_000;
     const LIVE_ROOT_PATH = "liveReportsV2";
     const LIVE_ENVELOPE_VERSION = 2;
-    const LIVE_STATE_SCHEMA_VERSION = 2;
-    const LEGACY_LIVE_STATE_SCHEMA_VERSION = 1;
+    const LIVE_STATE_ENVELOPE_SCHEMA_VERSION = 1;
+    const LIVE_STATE_PAYLOAD_SCHEMA_VERSION = 2;
+    const LEGACY_LIVE_STATE_PAYLOAD_SCHEMA_VERSION = 1;
     const LIVE_STATE_MAX_JSON_BYTES = 16 * 1024;
     const LIVE_SCOREBOARD_PERSPECTIVE_STORAGE_KEY = "ttScore:liveScoreboardPerspective:v1";
     const SPEECH_PROFILE_STORAGE_KEY = "ttScore:speechProfiles:v2";
@@ -3915,7 +3916,7 @@
 
     function buildCompactLiveState(snapshot = state) {
       return {
-        schemaVersion: LIVE_STATE_SCHEMA_VERSION,
+        schemaVersion: LIVE_STATE_PAYLOAD_SCHEMA_VERSION,
         matchId: snapshot.matchId,
         matchDate: snapshot.matchDate,
         recordCreatedAt: snapshot.recordCreatedAt,
@@ -4100,7 +4101,7 @@
         );
         const stateEnvelope = {
           envelopeVersion: LIVE_ENVELOPE_VERSION,
-          schemaVersion: LIVE_STATE_SCHEMA_VERSION,
+          schemaVersion: LIVE_STATE_ENVELOPE_SCHEMA_VERSION,
           revision: stateRevision,
           checkpointRevision,
           updatedAt: firebase.databaseModule.serverTimestamp(),
@@ -4136,7 +4137,7 @@
           await firebase.databaseModule.set(reportRef, {
             meta: {
               envelopeVersion: LIVE_ENVELOPE_VERSION,
-              schemaVersion: LIVE_STATE_SCHEMA_VERSION,
+              schemaVersion: LIVE_STATE_ENVELOPE_SCHEMA_VERSION,
               expiresAt: publicationAtStart.expiresAt
             },
             state: stateEnvelope,
@@ -4445,7 +4446,7 @@
       if (Object.keys(value).some(key => !allowed.includes(key)) || allowed.some(key => !(key in value))) {
         throw new Error("Конверт компактного live-состояния не соответствует версии live-протокола.");
       }
-      if (value.envelopeVersion !== LIVE_ENVELOPE_VERSION || ![LEGACY_LIVE_STATE_SCHEMA_VERSION, LIVE_STATE_SCHEMA_VERSION].includes(value.schemaVersion)) {
+      if (value.envelopeVersion !== LIVE_ENVELOPE_VERSION || value.schemaVersion !== LIVE_STATE_ENVELOPE_SCHEMA_VERSION) {
         throw new Error("Версия компактного live-состояния не поддерживается.");
       }
       if (!Number.isInteger(value.revision) || value.revision < 1) throw new Error("Некорректная live-ревизия.");
@@ -4487,18 +4488,18 @@
       ];
       const v2Allowed = [...legacyAllowed, "counterPhase", "phaseRevision", "phaseUpdatedAt", "sportRevision", "completionConfirmedAt"];
       const schema = Number(value?.schemaVersion);
-      const allowed = schema === LEGACY_LIVE_STATE_SCHEMA_VERSION ? legacyAllowed : v2Allowed;
+      const allowed = schema === LEGACY_LIVE_STATE_PAYLOAD_SCHEMA_VERSION ? legacyAllowed : v2Allowed;
       if (!value || typeof value !== "object" || Array.isArray(value)
           || Object.keys(value).some(key => !allowed.includes(key))
           || allowed.some(key => !(key in value))
-          || ![LEGACY_LIVE_STATE_SCHEMA_VERSION, LIVE_STATE_SCHEMA_VERSION].includes(schema)) {
+          || ![LEGACY_LIVE_STATE_PAYLOAD_SCHEMA_VERSION, LIVE_STATE_PAYLOAD_SCHEMA_VERSION].includes(schema)) {
         throw new Error("Расшифрованное компактное состояние имеет неверную схему.");
       }
       const previousRallies = checkpointState?.matchId === value.matchId && Array.isArray(checkpointState.rallies)
         ? checkpointState.rallies
         : [];
       const restored = { ...value, rallies: previousRallies, history: [] };
-      if (schema === LEGACY_LIVE_STATE_SCHEMA_VERSION) {
+      if (schema === LEGACY_LIVE_STATE_PAYLOAD_SCHEMA_VERSION) {
         restored.counterPhase = null;
         restored.phaseRevision = 0;
         restored.phaseUpdatedAt = null;

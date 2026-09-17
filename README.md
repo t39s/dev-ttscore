@@ -44,6 +44,8 @@ RC4 replaces the RC3 guard-around-mutable-state approach with a bounded commit/s
 
 RC5 closes R4-R15 in initial Live creation. Because Firebase/Auth setup is asynchronous, the creator reselects the latest committed snapshot of the same personal match immediately before establishing the source and first publish. A newer durable commit that arrives during setup becomes the initial Live payload; if the current in-memory match has diverged from durable storage or the match identity changed, creation aborts fail-closed instead of publishing an older snapshot.
 
+RC6 closes field-confirmed R4-R16 without changing `ttscore-live` or its deployed Security Rules. The Firebase `liveReportsV2` envelope/meta schema remains **1** exactly as required by the existing Rules, while the encrypted compact payload remains **2** and carries the new phase fields. The viewer therefore gets phase-aware state without requiring any backend migration or Rules deployment.
+
 The most recent Undo snapshot is stored with the local meeting, so reload preserves one valid Undo step, including the pre-confirmation match-over correction path, without persisting the full 50-step in-memory history.
 
 There is no user-facing Pause Live in the accepted baseline. Network interruption, stale Team data and Live failure remain technical recovery states separate from the game phase.
