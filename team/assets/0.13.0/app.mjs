@@ -437,6 +437,7 @@ function markTransitionResultDirty() {
 function ttScoreLiveDescription(live) {
   if (!live) return "Live: не включён";
   if (live.status === "available") return "Live: ссылка доступна";
+  if (live.status === "starting") return "Live: запуск публикации";
   if (live.status === "expired") return "Live: ссылка истекла";
   if (live.status === "mismatch") return "Live: публикация относится к другой встрече";
   if (live.status === "invalid") return `Live: несовместимая публикация — ${live.error}`;

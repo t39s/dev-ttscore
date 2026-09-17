@@ -129,6 +129,11 @@ export function inspectTtScoreLivePublication(raw, ttScoreState, now = Date.now(
       return { status: "mismatch", publication: null, error: null };
     }
     if (publication.expiresAt <= now) return { status: "expired", publication: null, error: null };
+    const confirmedRevision = Number(publication.lastPublishedStateRevision || 0);
+    const confirmedAt = Number(publication.lastPublishedAt);
+    if (!Number.isInteger(confirmedRevision) || confirmedRevision < 1 || !Number.isFinite(confirmedAt) || confirmedAt <= 0) {
+      return { status: "starting", publication: null, error: null };
+    }
     return { status: "available", publication, error: null };
   } catch (error) {
     return { status: "invalid", publication: null, error: error instanceof Error ? error.message : String(error) };
