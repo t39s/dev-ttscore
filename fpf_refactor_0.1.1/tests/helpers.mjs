@@ -1,0 +1,5 @@
+import {id,makeSession,counterCommand,freezeCompletion} from '../public/domain.mjs';
+export const input=()=>({teamNames:['Север','Юг'],athletes:[['Анна','Борис'],['Вера','Глеб']],bestOf:3});
+export const command=(s,type,rest={})=>counterCommand(s,{id:id(),type,...rest});
+export function winGame(s,side){s=command(s,'start');for(let i=0;i<11;i++)s=command(s,'point',{side});return s;}
+export async function setup(service){const c=await service.create(input()),reg={id:id(),type:'register',individualMatchId:'m1',generation:1,attemptId:id(),writerId:'writer'};const r=await service.command(c.team.id,reg,c.umpireToken);let s=makeSession(c.team,{writerId:'writer',attemptId:reg.attemptId});s.binding=r.outcome.binding;s=command(s,'arrived');s=winGame(s,0);s=command(s,'next');s=winGame(s,0);const session=await freezeCompletion(s),e=session.completion;return {...c,session,reg,backup:{id:'backup-'+e.finalizationId,type:'backup',envelope:e},accept:{id:e.commandId,type:'accept',binding:e.binding,finalizationId:e.finalizationId,envelopeHash:e.payloadHash}};}

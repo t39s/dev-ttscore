@@ -1,0 +1,25 @@
+✔ accept idempotent after current changes: 8 concurrent retries (16.89562ms)
+✔ Team Undo then retry: accepted_then_undone, no second effect (5.406863ms)
+✔ same command ID changed payload rejected (4.41348ms)
+✔ manual and automatic race has exactly one winner (3.826106ms)
+✔ revoked generation rejects stale report and Live (3.279455ms)
+✔ writer cannot steal registration; retry preserves epochs (3.22439ms)
+✔ forged hash and rehashed fraudulent report rejected (3.416386ms)
+✔ accept without immutable backup rejected (2.786827ms)
+✔ wrong role and wrong Team capabilities rejected (3.280757ms)
+✔ manual no report: 2:2 final draw and Undo reopens (2.37309ms)
+✔ public view contains no capability hashes, receipts or report bytes (3.535509ms)
+✔ seven phases, blank versus zero, held final and release (7.893472ms)
+✔ deciding 12:10: sport 3:2, displayed 2:2 (6.709981ms)
+✔ Undo after final returns game with higher revision (2.075402ms)
+✔ deduplication and phase guards (1.057577ms)
+✔ frozen bytes survive release; sporting undo closed (2.31447ms)
+✔ report rejects extra rally and fraudulent result (2.075433ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 130.474557

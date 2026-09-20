@@ -1,0 +1,29 @@
+PASS server Create via UI
+PASS server Prepared phase visible; blank distinct from zero
+PASS server Failed commit does not advance score
+PASS server Reload restores one Undo
+PASS server Offline local score and reconnect
+PASS server Held final for actual 2:0
+PASS server Completion commit failure sends no result
+PASS server Lost acceptance response; retry gives one win
+PASS server Undo then stale retry never restores result
+PASS server New attempt blank, no previous score
+PASS server Second writer blocked
+PASS server 390px and 768px without horizontal overflow
+PASS server No browser page errors
+PASS server Different Team blocked while Administrator active
+PASS demo Create via UI
+PASS demo Prepared phase visible; blank distinct from zero
+PASS demo Failed commit does not advance score
+PASS demo Reload restores one Undo
+PASS demo Offline local score and reconnect
+PASS demo Held final for actual 2:0
+PASS demo Completion commit failure sends no result
+PASS demo Lost acceptance response; retry gives one win
+PASS demo Undo then stale retry never restores result
+PASS demo New attempt blank, no previous score
+PASS demo Second writer blocked
+PASS demo 390px and 768px without horizontal overflow
+PASS demo No browser page errors
+PASS demo Different Team blocked while Administrator active
+TOTAL 28

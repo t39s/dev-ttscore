@@ -1,0 +1,20 @@
+{
+  "name": "ttscore-prototype",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "start": "node server/http.mjs",
+    "test": "node --test tests/domain.test.mjs tests/boundary.test.mjs",
+    "test:browser": "node tests/browser.mjs",
+    "emulator": "firebase emulators:start --only database --project demo-ttscore-next",
+    "test:rtdb": "firebase emulators:exec --only database --project demo-ttscore-next \"node --test tests/rtdb.test.mjs\""
+  },
+  "devDependencies": {
+    "firebase-tools": "13.35.1",
+    "playwright": "1.51.1"
+  }
+}

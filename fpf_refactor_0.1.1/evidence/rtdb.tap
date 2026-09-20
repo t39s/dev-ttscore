@@ -1,0 +1,179 @@
+✖ accept idempotent after current changes: 8 concurrent retries (14.039181ms)
+✖ Team Undo then retry: accepted_then_undone, no second effect (2.996441ms)
+✖ same command ID changed payload rejected (2.019257ms)
+✖ manual and automatic race has exactly one winner (3.873924ms)
+✖ revoked generation rejects stale report and Live (1.935861ms)
+✖ writer cannot steal registration; retry preserves epochs (1.593133ms)
+✖ forged hash and rehashed fraudulent report rejected (1.410087ms)
+✖ accept without immutable backup rejected (2.232608ms)
+✖ wrong role and wrong Team capabilities rejected (2.495695ms)
+✖ manual no report: 2:2 final draw and Undo reopens (2.052276ms)
+✖ public view contains no capability hashes, receipts or report bytes (2.700675ms)
+✖ RTDB rules reject direct unauthenticated read/write and patch (1.270627ms)
+✔ emulator adapter cannot target production (0.536029ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 1
+ℹ fail 12
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 125.816421
+
+✖ failing tests:
+
+test at tests/boundary-suite.mjs:3:28
+✖ accept idempotent after current changes: 8 concurrent retries (14.039181ms)
+  [TypeError: fetch failed] {
+    [cause]: Error: connect ECONNREFUSED 127.0.0.1:19000
+        at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16) {
+      errno: -111,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '127.0.0.1',
+      port: 19000
+    }
+  }
+
+test at tests/boundary-suite.mjs:3:28
+✖ Team Undo then retry: accepted_then_undone, no second effect (2.996441ms)
+  [TypeError: fetch failed] {
+    [cause]: Error: connect ECONNREFUSED 127.0.0.1:19000
+        at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16) {
+      errno: -111,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '127.0.0.1',
+      port: 19000
+    }
+  }
+
+test at tests/boundary-suite.mjs:3:28
+✖ same command ID changed payload rejected (2.019257ms)
+  [TypeError: fetch failed] {
+    [cause]: Error: connect ECONNREFUSED 127.0.0.1:19000
+        at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16) {
+      errno: -111,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '127.0.0.1',
+      port: 19000
+    }
+  }
+
+test at tests/boundary-suite.mjs:3:28
+✖ manual and automatic race has exactly one winner (3.873924ms)
+  [TypeError: fetch failed] {
+    [cause]: Error: connect ECONNREFUSED 127.0.0.1:19000
+        at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16) {
+      errno: -111,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '127.0.0.1',
+      port: 19000
+    }
+  }
+
+test at tests/boundary-suite.mjs:3:28
+✖ revoked generation rejects stale report and Live (1.935861ms)
+  [TypeError: fetch failed] {
+    [cause]: Error: connect ECONNREFUSED 127.0.0.1:19000
+        at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16) {
+      errno: -111,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '127.0.0.1',
+      port: 19000
+    }
+  }
+
+test at tests/boundary-suite.mjs:3:28
+✖ writer cannot steal registration; retry preserves epochs (1.593133ms)
+  [TypeError: fetch failed] {
+    [cause]: Error: connect ECONNREFUSED 127.0.0.1:19000
+        at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16) {
+      errno: -111,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '127.0.0.1',
+      port: 19000
+    }
+  }
+
+test at tests/boundary-suite.mjs:3:28
+✖ forged hash and rehashed fraudulent report rejected (1.410087ms)
+  [TypeError: fetch failed] {
+    [cause]: Error: connect ECONNREFUSED 127.0.0.1:19000
+        at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16) {
+      errno: -111,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '127.0.0.1',
+      port: 19000
+    }
+  }
+
+test at tests/boundary-suite.mjs:3:28
+✖ accept without immutable backup rejected (2.232608ms)
+  [TypeError: fetch failed] {
+    [cause]: Error: connect ECONNREFUSED 127.0.0.1:19000
+        at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16) {
+      errno: -111,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '127.0.0.1',
+      port: 19000
+    }
+  }
+
+test at tests/boundary-suite.mjs:3:28
+✖ wrong role and wrong Team capabilities rejected (2.495695ms)
+  [TypeError: fetch failed] {
+    [cause]: Error: connect ECONNREFUSED 127.0.0.1:19000
+        at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16) {
+      errno: -111,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '127.0.0.1',
+      port: 19000
+    }
+  }
+
+test at tests/boundary-suite.mjs:3:28
+✖ manual no report: 2:2 final draw and Undo reopens (2.052276ms)
+  [TypeError: fetch failed] {
+    [cause]: Error: connect ECONNREFUSED 127.0.0.1:19000
+        at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16) {
+      errno: -111,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '127.0.0.1',
+      port: 19000
+    }
+  }
+
+test at tests/boundary-suite.mjs:3:28
+✖ public view contains no capability hashes, receipts or report bytes (2.700675ms)
+  [TypeError: fetch failed] {
+    [cause]: Error: connect ECONNREFUSED 127.0.0.1:19000
+        at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16) {
+      errno: -111,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '127.0.0.1',
+      port: 19000
+    }
+  }
+
+test at tests/rtdb.test.mjs:3:1
+✖ RTDB rules reject direct unauthenticated read/write and patch (1.270627ms)
+  [TypeError: fetch failed] {
+    [cause]: Error: connect ECONNREFUSED 127.0.0.1:19000
+        at TCPConnectWrap.afterConnect [as oncomplete] (node:net:1864:16) {
+      errno: -111,
+      code: 'ECONNREFUSED',
+      syscall: 'connect',
+      address: '127.0.0.1',
+      port: 19000
+    }
+  }

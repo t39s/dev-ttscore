@@ -1,0 +1,145 @@
+{
+  "browser": "Chromium 134.0.6998.35",
+  "results": [
+    {
+      "mode": "server",
+      "scenario": "Create via UI",
+      "status": "PASS"
+    },
+    {
+      "mode": "server",
+      "scenario": "Prepared phase visible; blank distinct from zero",
+      "status": "PASS"
+    },
+    {
+      "mode": "server",
+      "scenario": "Failed commit does not advance score",
+      "status": "PASS"
+    },
+    {
+      "mode": "server",
+      "scenario": "Reload restores one Undo",
+      "status": "PASS"
+    },
+    {
+      "mode": "server",
+      "scenario": "Offline local score and reconnect",
+      "status": "PASS"
+    },
+    {
+      "mode": "server",
+      "scenario": "Held final for actual 2:0",
+      "status": "PASS"
+    },
+    {
+      "mode": "server",
+      "scenario": "Completion commit failure sends no result",
+      "status": "PASS"
+    },
+    {
+      "mode": "server",
+      "scenario": "Lost acceptance response; retry gives one win",
+      "status": "PASS"
+    },
+    {
+      "mode": "server",
+      "scenario": "Undo then stale retry never restores result",
+      "status": "PASS"
+    },
+    {
+      "mode": "server",
+      "scenario": "New attempt blank, no previous score",
+      "status": "PASS"
+    },
+    {
+      "mode": "server",
+      "scenario": "Second writer blocked",
+      "status": "PASS"
+    },
+    {
+      "mode": "server",
+      "scenario": "390px and 768px without horizontal overflow",
+      "status": "PASS"
+    },
+    {
+      "mode": "server",
+      "scenario": "No browser page errors",
+      "status": "PASS"
+    },
+    {
+      "mode": "server",
+      "scenario": "Different Team blocked while Administrator active",
+      "status": "PASS"
+    },
+    {
+      "mode": "demo",
+      "scenario": "Create via UI",
+      "status": "PASS"
+    },
+    {
+      "mode": "demo",
+      "scenario": "Prepared phase visible; blank distinct from zero",
+      "status": "PASS"
+    },
+    {
+      "mode": "demo",
+      "scenario": "Failed commit does not advance score",
+      "status": "PASS"
+    },
+    {
+      "mode": "demo",
+      "scenario": "Reload restores one Undo",
+      "status": "PASS"
+    },
+    {
+      "mode": "demo",
+      "scenario": "Offline local score and reconnect",
+      "status": "PASS"
+    },
+    {
+      "mode": "demo",
+      "scenario": "Held final for actual 2:0",
+      "status": "PASS"
+    },
+    {
+      "mode": "demo",
+      "scenario": "Completion commit failure sends no result",
+      "status": "PASS"
+    },
+    {
+      "mode": "demo",
+      "scenario": "Lost acceptance response; retry gives one win",
+      "status": "PASS"
+    },
+    {
+      "mode": "demo",
+      "scenario": "Undo then stale retry never restores result",
+      "status": "PASS"
+    },
+    {
+      "mode": "demo",
+      "scenario": "New attempt blank, no previous score",
+      "status": "PASS"
+    },
+    {
+      "mode": "demo",
+      "scenario": "Second writer blocked",
+      "status": "PASS"
+    },
+    {
+      "mode": "demo",
+      "scenario": "390px and 768px without horizontal overflow",
+      "status": "PASS"
+    },
+    {
+      "mode": "demo",
+      "scenario": "No browser page errors",
+      "status": "PASS"
+    },
+    {
+      "mode": "demo",
+      "scenario": "Different Team blocked while Administrator active",
+      "status": "PASS"
+    }
+  ]
+}

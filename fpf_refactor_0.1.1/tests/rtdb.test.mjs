@@ -1,0 +1,4 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {RtdbRepository} from '../server/repository.mjs';import {Service} from '../server/service.mjs';import {boundarySuite} from './boundary-suite.mjs';
+boundarySuite(test,()=>({service:new Service(new RtdbRepository())}));
+test('RTDB rules reject direct unauthenticated read/write and patch',async()=>{for(const method of ['GET','PUT','PATCH','DELETE']){const r=await fetch('http://127.0.0.1:19000/prototype/teams/forged.json?ns=demo-ttscore-next-default-rtdb',{method,...(['PUT','PATCH'].includes(method)?{body:JSON.stringify({body:'forged'}),headers:{'Content-Type':'application/json'}}:{})});assert([401,403].includes(r.status),method+' '+r.status);}});
+test('emulator adapter cannot target production',()=>{assert.throws(()=>new RtdbRepository('https://real.firebaseio.com'));assert.throws(()=>new RtdbRepository('http://127.0.0.1:19000','real-project'));});
